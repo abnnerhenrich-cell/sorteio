@@ -273,7 +273,7 @@
     data.sorteios.push({id:crypto.randomUUID(),titulo:sTitulo.value,descricao:sDesc.value||'Escolha uma dezena disponível para participar.',premio:sPremio.value,status:'ativo',data:sData.value||new Date().toISOString().slice(0,10)}); save(data);
   }
   function toggleSorteio(id){const data=db(); const s=data.sorteios.find(x=>x.id===id); s.status=s.status==='ativo'?'pausado':'ativo'; save(data)}
-  function excluirSorteio(id){if(!confirm('Excluir este sorteio?'))return; const data=db(); data.sorteios=data.sorteios.filter(s=>s.id!==id); data.participantes=data.participantes.filter(p=>p.sorteioId!==id); save(data)}
+  function excluirSorteio(id){if(!confirm('Excluir este sorteio? Isso também vai apagar os participantes e ganhadores desse sorteio.'))return; const data=db(); data.sorteios=data.sorteios.filter(s=>s.id!==id); data.participantes=data.participantes.filter(p=>p.sorteioId!==id); data.ganhadores=data.ganhadores.filter(g=>g.sorteioId!==id); save(data)}
   function sortearGanhador(){
     const data=db(); const sid=drawSorteio.value; const lista=data.participantes.filter(p=>p.sorteioId===sid); if(!lista.length)return alert('Nenhum participante nesse sorteio.');
     const p=lista[Math.floor(Math.random()*lista.length)]; const s=data.sorteios.find(x=>x.id===sid);
