@@ -86,8 +86,79 @@
     .dezena-info{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}.mini-tag{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--muted)}.winner{font-size:34px;text-align:center;padding:22px;border-radius:22px;background:rgba(57,255,155,.1);color:var(--green);font-weight:950;text-shadow:0 0 18px var(--green)}
     footer{text-align:center;color:var(--muted);padding:28px;border-top:1px solid rgba(255,255,255,.08);background:rgba(2,5,14,.46)}
     @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 14px 30px rgba(57,255,155,.26)}50%{transform:scale(1.027);box-shadow:0 0 40px rgba(57,255,155,.42)}}.pulse{animation:pulse 1.35s infinite}
-    @media(max-width:900px){.hero,.grid,.admin-layout{grid-template-columns:1fr}.sidebar{position:static}.nav{align-items:flex-start}.logo{font-size:19px}.menu button{padding:10px 12px}.stats{grid-template-columns:1fr 1fr 1fr}h1{font-size:35px}.hero-card,.card{border-radius:25px;padding:21px}.wrap{padding-top:16px}}
-    @media(max-width:560px){.nav{display:grid}.menu{justify-content:stretch}.menu button{flex:1}.stats{grid-template-columns:1fr}.hero-actions .btn{width:100%;text-align:center}.price{font-size:27px}h1{font-size:31px}.section-title{font-size:25px}.modal{padding:10px}.modal-box{max-height:calc(100vh - 20px);padding:18px;border-radius:24px}.dezenas-grid{grid-template-columns:repeat(5,1fr);max-height:240px}.dezena-btn{padding:9px 0!important}.form .btn.ok{position:sticky;bottom:0;width:100%;z-index:5;margin-top:4px}}
+    @media(max-width:900px){
+      .hero,.grid,.admin-layout{grid-template-columns:1fr}
+      .sidebar{position:static;width:100%}
+      .nav{align-items:flex-start}
+      .logo{font-size:19px}
+      .menu button{padding:10px 12px}
+      .stats{grid-template-columns:1fr 1fr 1fr}
+      h1{font-size:35px}
+      .hero-card,.card{border-radius:25px;padding:21px}
+      .wrap{padding-top:16px}
+    }
+
+    @media(max-width:560px){
+      html,body{width:100%;max-width:100%;overflow-x:hidden}
+      body:before{background-size:34px 34px}
+      header{position:sticky;top:0}
+      .nav{display:flex;flex-direction:column;align-items:stretch;padding:12px 10px;gap:12px;width:100%}
+      .logo{font-size:22px;justify-content:center;text-align:center;line-height:1.15;gap:8px}
+      .logo:before{width:42px;height:42px;border-radius:14px;flex:0 0 42px}
+      .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
+      .menu button{width:100%;min-height:50px;padding:10px 6px;border-radius:18px;font-size:14px;white-space:normal;text-align:center;line-height:1.1}
+      .wrap{width:100%;padding:14px 10px 60px}
+      .hero{padding:12px 0;gap:14px}
+      .hero-card,.card{border-radius:22px;padding:16px;width:100%;max-width:100%;box-shadow:0 12px 36px rgba(0,0,0,.35)}
+      .hero-card:before,.card:before{width:110px;height:110px;right:-45px;top:-45px}
+      .badge{font-size:12px;padding:8px 10px;line-height:1.25}
+      h1{font-size:28px;letter-spacing:-.6px;line-height:1.05}
+      .lead{font-size:15px;line-height:1.45}
+      .hero-actions{display:grid;grid-template-columns:1fr;gap:9px}
+      .hero-actions .btn{width:100%;text-align:center;min-height:48px}
+      .stats{grid-template-columns:1fr;gap:9px}
+      .stat{padding:13px;border-radius:18px}
+      .stat strong{font-size:25px}
+      .steps{gap:10px}
+      .step{padding:12px;border-radius:16px}
+      .step b{min-width:32px;height:32px;border-radius:11px}
+      .section-title{font-size:24px;margin:20px 0 12px;line-height:1.15}
+      .section-title:before{height:28px;width:7px}
+      .grid{grid-template-columns:1fr;gap:12px}
+      .sorteio{min-height:auto;gap:14px}
+      .sorteio h3{font-size:20px}
+      .price{font-size:25px}
+      button,.btn{min-height:46px;border-radius:16px;padding:11px 13px;font-size:15px}
+      input,select,textarea{font-size:16px;padding:13px 14px;border-radius:16px;min-height:48px}
+      textarea{min-height:95px}
+      .admin-layout{display:block}
+      .sidebar{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:14px;padding:12px;border-radius:22px;overflow:hidden}
+      .sidebar button{margin:0;min-height:50px;font-size:16px;border-radius:18px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      .sidebar .danger{margin-top:4px}
+      .admin-tab{margin-top:0}
+      .table-wrap{width:100%;overflow-x:auto;border-radius:16px;-webkit-overflow-scrolling:touch}
+      .table{min-width:560px}
+      .table th,.table td{padding:11px 10px;font-size:13px}
+      .modal{padding:8px;align-items:flex-start}
+      .modal-box{width:100%;max-height:calc(100vh - 16px);padding:15px;border-radius:22px}
+      .modal-head h2{font-size:20px}
+      .close{width:40px!important;height:40px!important;min-height:40px!important}
+      .dezenas-grid{grid-template-columns:repeat(5,1fr);gap:7px;max-height:230px;margin:10px 0;padding:2px}
+      .dezena-btn{min-height:42px!important;padding:8px 0!important;border-radius:14px!important;font-size:15px!important}
+      .notice{font-size:14px;padding:12px;border-radius:16px;line-height:1.4}
+      .mini-tag{font-size:11px;padding:7px 9px}
+      .form .btn.ok{position:sticky;bottom:0;width:100%;z-index:5;margin-top:4px}
+      footer{font-size:13px;padding:20px 12px}
+    }
+
+    @media(max-width:380px){
+      .logo{font-size:19px}
+      .menu button{font-size:12px;min-height:46px;padding:9px 4px}
+      h1{font-size:25px}
+      .section-title{font-size:22px}
+      .dezenas-grid{grid-template-columns:repeat(4,1fr)}
+      .sidebar button{font-size:14px}
+    }
   </style>
 </head>
 <body>
@@ -125,9 +196,10 @@
           <div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div>
           <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome, WhatsApp e cidade.</p></div></div>
           <div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
-       </div>
-     </div>
-   </div>
+        </div>
+        <div class="notice">Para publicar profissionalmente com Pix automático, banco de dados e login real, esta base pode ser evoluída depois.</div>
+      </div>
+    </div>
     <h2 class="section-title" id="sorteios">Sorteios Ativos</h2>
     <div class="grid" id="sorteiosGrid"></div>
   </section>
@@ -178,6 +250,7 @@
 <div id="loginModal" class="modal hidden">
   <div class="modal-box">
     <div class="modal-head"><h2>🔐 Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
+    <div class="notice">Senha inicial: <strong>admin123</strong>. Troque no código antes de publicar.</div>
     <div class="form">
       <input id="adminSenha" type="password" placeholder="Senha do administrador" />
       <button class="btn" onclick="loginAdmin()">🚀 Entrar no Painel</button>
@@ -193,18 +266,18 @@
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
   const firebaseConfig = {
-  apiKey: "AIzaSyAP0ITU9ZuHkEpZ8T1SED8kKdTB8nvmbVA",
-  authDomain: "sorteio-kelly.firebaseapp.com",
-  projectId: "sorteio-kelly",
-  storageBucket: "sorteio-kelly.firebasestorage.app",
-  messagingSenderId: "792044241286",
-  appId: "1:792044241286:web:ff417bb6d36625b835ec07",
-};
+    apiKey: "COLE_SUA_API_KEY_AQUI",
+    authDomain: "COLE_SEU_AUTH_DOMAIN_AQUI",
+    projectId: "COLE_SEU_PROJECT_ID_AQUI",
+    storageBucket: "COLE_SEU_STORAGE_BUCKET_AQUI",
+    messagingSenderId: "COLE_SEU_MESSAGING_SENDER_ID_AQUI",
+    appId: "COLE_SEU_APP_ID_AQUI"
+  };
 
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
 
-  const ADMIN_PASSWORD = 'Marjorie06092025';
+  const ADMIN_PASSWORD = 'admin123';
   let currentSorteioId = null;
   let selectedDezena = null;
   let sorteios = [];
