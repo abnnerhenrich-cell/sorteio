@@ -77,7 +77,13 @@
     .modal{position:fixed;inset:0;background:rgba(0,0,0,.80);display:flex;align-items:center;justify-content:center;padding:16px;z-index:60}.modal-box{width:min(575px,100%);background:linear-gradient(180deg,#0b2246,#071326);border:1px solid rgba(0,200,255,.42);border-radius:30px;padding:25px;box-shadow:0 0 60px rgba(0,200,255,.38)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.close{background:rgba(255,255,255,.09)!important;color:#fff!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:15px!important;width:43px;height:43px;padding:0!important;font-size:24px;box-shadow:none!important}
     .admin-layout{display:grid;grid-template-columns:255px 1fr;gap:18px}.sidebar{background:rgba(7,19,40,.90);border:1px solid rgba(0,200,255,.20);border-radius:28px;padding:14px;height:max-content;position:sticky;top:88px;box-shadow:var(--shadow)}.sidebar button{width:100%;margin:5px 0;text-align:left;background:rgba(255,255,255,.085);box-shadow:none;border:1px solid rgba(255,255,255,.09);justify-content:flex-start}.sidebar button:hover{background:rgba(0,200,255,.14)!important;border-color:rgba(0,200,255,.38)}
     .table-wrap{overflow:auto;border-radius:19px;border:1px solid rgba(255,255,255,.09)}.table{width:100%;border-collapse:collapse;min-width:650px;background:rgba(255,255,255,.045)}.table th,.table td{padding:13px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px}.table th{color:var(--blue);background:rgba(0,200,255,.07);font-size:13px;text-transform:uppercase;letter-spacing:.4px}.table tr:hover td{background:rgba(255,255,255,.035)}
-    .notice{background:rgba(255,228,94,.12);border:1px solid rgba(255,228,94,.34);padding:14px;border-radius:18px;color:#fff6bf;margin:12px 0;line-height:1.45}.winner{font-size:34px;text-align:center;padding:22px;border-radius:22px;background:rgba(57,255,155,.1);color:var(--green);font-weight:950;text-shadow:0 0 18px var(--green)}
+    .notice{background:rgba(255,228,94,.12);border:1px solid rgba(255,228,94,.34);padding:14px;border-radius:18px;color:#fff6bf;margin:12px 0;line-height:1.45}
+    .dezenas-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin:14px 0;max-height:310px;overflow:auto;padding:4px}
+    .dezena-btn{padding:10px 0!important;border-radius:13px!important;background:rgba(255,255,255,.09)!important;border:1px solid rgba(0,200,255,.24)!important;box-shadow:none!important;font-size:14px!important;color:#fff!important}
+    .dezena-btn:hover{background:linear-gradient(135deg,var(--blue),var(--blue2))!important}
+    .dezena-btn.selected{background:linear-gradient(135deg,var(--green),#00b86b)!important;color:#04160d!important;border-color:rgba(57,255,155,.8)!important;box-shadow:0 0 18px rgba(57,255,155,.35)!important}
+    .dezena-btn.taken{background:rgba(255,59,101,.16)!important;color:#ff9bae!important;border-color:rgba(255,59,101,.35)!important;cursor:not-allowed!important;text-decoration:line-through;opacity:.68}
+    .dezena-info{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}.mini-tag{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--muted)}.winner{font-size:34px;text-align:center;padding:22px;border-radius:22px;background:rgba(57,255,155,.1);color:var(--green);font-weight:950;text-shadow:0 0 18px var(--green)}
     footer{text-align:center;color:var(--muted);padding:28px;border-top:1px solid rgba(255,255,255,.08);background:rgba(2,5,14,.46)}
     @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 14px 30px rgba(57,255,155,.26)}50%{transform:scale(1.027);box-shadow:0 0 40px rgba(57,255,155,.42)}}.pulse{animation:pulse 1.35s infinite}
     @media(max-width:900px){.hero,.grid,.admin-layout{grid-template-columns:1fr}.sidebar{position:static}.nav{align-items:flex-start}.logo{font-size:19px}.menu button{padding:10px 12px}.stats{grid-template-columns:1fr 1fr 1fr}h1{font-size:35px}.hero-card,.card{border-radius:25px;padding:21px}.wrap{padding-top:16px}}
@@ -87,11 +93,11 @@
 <body>
 <header>
   <div class="nav">
-    <div class="logo" id="siteLogo">Sorteios da Kelly</div>
+    <div class="logo"><span id="siteLogo">Sorteios da Kelly</span></div>
     <div class="menu">
-      <button onclick="showPage('home')">Início</button>
-      <button class="secondary" onclick="showPage('ganhadores')">Ganhadores</button>
-      <button class="secondary" onclick="openLogin()">Admin</button>
+      <button onclick="showPage('home')">🏠 Início</button>
+      <button class="secondary" onclick="showPage('ganhadores')">🏆 Ganhadores</button>
+      <button class="secondary" onclick="openLogin()">🔐 Admin</button>
     </div>
   </div>
 </header>
@@ -100,9 +106,13 @@
   <section id="homePage">
     <div class="hero">
       <div class="hero-card">
+        <div class="badge">✨ Sorteios rápidos, bonitos e transparentes</div>
         <h1>Participe dos <span>melhores sorteios</span></h1>
-        <p class="lead">Cadastre seu nome, escolha o sorteio e acompanhe o resultado de forma simples, rápida e transparente.</p>
-        <button class="btn pulse" onclick="document.getElementById('sorteios').scrollIntoView({behavior:'smooth'})">Ver Sorteios Ativos</button>
+        <p class="lead">Escolha seu sorteio, cadastre seus dados e acompanhe os ganhadores em uma página moderna e fácil de usar.</p>
+        <div class="hero-actions">
+          <button class="btn pulse" onclick="document.getElementById('sorteios').scrollIntoView({behavior:'smooth'})">🎟️ Participar Agora</button>
+          <button class="btn ghost" onclick="showPage('ganhadores')">👑 Ver Ganhadores</button>
+        </div>
         <div class="stats">
           <div class="stat"><strong id="countSorteios">0</strong>Sorteios</div>
           <div class="stat"><strong id="countParticipantes">0</strong>Participantes</div>
@@ -111,9 +121,12 @@
       </div>
       <div class="hero-card">
         <h2 style="color:var(--green);margin-bottom:10px">Como funciona?</h2>
-        <p class="lead">1. Escolha um sorteio ativo.<br>2. Preencha seus dados.<br>3. Aguarde o sorteio pelo painel.<br>4. Veja o ganhador na página pública.</p>
-        <div class="notice">Sistema pronto para teste. Para uso profissional com pagamento automático, precisa conectar banco de dados e gateway Pix.</div>
-      </div>
+        <div class="steps">
+          <div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div>
+          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome e WhatsApp.</p></div></div>
+          <div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
+        </div>
+       </div>
     </div>
     <h2 class="section-title" id="sorteios">Sorteios Ativos</h2>
     <div class="grid" id="sorteiosGrid"></div>
@@ -127,12 +140,12 @@
   <section id="adminPage" class="hidden">
     <div class="admin-layout">
       <aside class="sidebar">
-        <button onclick="adminTab('dashboard')">Dashboard</button>
-        <button onclick="adminTab('sorteios')">Sorteios</button>
-        <button onclick="adminTab('participantes')">Participantes</button>
-        <button onclick="adminTab('premiados')">Premiados</button>
-        <button onclick="adminTab('aparencia')">Aparência</button>
-        <button class="danger" onclick="logoutAdmin()">Sair</button>
+        <button onclick="adminTab('dashboard')">📊 Dashboard</button>
+        <button onclick="adminTab('sorteios')">🎁 Sorteios</button>
+        <button onclick="adminTab('participantes')">👥 Participantes</button>
+        <button onclick="adminTab('premiados')">🏆 Premiados</button>
+        <button onclick="adminTab('aparencia')">🎨 Aparência</button>
+        <button class="danger" onclick="logoutAdmin()">🚪 Sair</button>
       </aside>
       <div>
         <div id="tabDashboard" class="card admin-tab"></div>
@@ -151,36 +164,36 @@
 
 <div id="participarModal" class="modal hidden">
   <div class="modal-box">
-    <div class="modal-head"><h2>Participar do Sorteio</h2><button class="close" onclick="closeModal('participarModal')">×</button></div>
+    <div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button class="close" onclick="closeModal('participarModal')">×</button></div>
     <div id="participarInfo"></div>
     <div class="form">
       <input id="pNome" placeholder="Seu nome completo" />
       <input id="pWhats" placeholder="WhatsApp" />
-      <input id="pCidade" placeholder="Cidade" />
-      <button class="btn ok" onclick="salvarParticipacao()">Confirmar Participação</button>
+      <button class="btn ok" onclick="salvarParticipacao()">✅ Confirmar Participação</button>
     </div>
   </div>
 </div>
 
 <div id="loginModal" class="modal hidden">
   <div class="modal-box">
-    <div class="modal-head"><h2>Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
-    <div class="notice">Senha inicial: <strong>admin123</strong>. Troque no código antes de publicar.</div>
+    <div class="modal-head"><h2>🔐 Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
+    <div class="notice"> <strong></strong>. </div>
     <div class="form">
       <input id="adminSenha" type="password" placeholder="Senha do administrador" />
-      <button class="btn" onclick="loginAdmin()">Entrar</button>
+      <button class="btn" onclick="loginAdmin()">🚀 Entrar no Painel</button>
     </div>
   </div>
 </div>
 
 <script>
-  const ADMIN_PASSWORD = 'admin123';
+  const ADMIN_PASSWORD = '06092025Marjorie';
   let currentSorteioId = null;
+  let selectedDezena = null;
   const initialData = {
     settings:{nome:'Sorteios da Kelly',rodape:'Kelly Menezes'},
     sorteios:[
-      {id:crypto.randomUUID(),titulo:'Sorteio Pix Premiado',descricao:'Concorra a um Pix especial. Resultado divulgado após o sorteio.',premio:'R$ 100,00 no Pix',status:'ativo',data:'2026-06-01'},
-      {id:crypto.randomUUID(),titulo:'Sorteio Cliente da Sorte',descricao:'Sorteio exclusivo para clientes cadastrados.',premio:'Prêmio surpresa',status:'ativo',data:'2026-06-02'}
+      {id:crypto.randomUUID(),titulo:'Sorteio Pix Premiado',descricao:'Escolha uma dezena disponível e concorra ao prêmio.',premio:'R$ 100,00 no Pix',status:'ativo',data:'2026-06-01'},
+      {id:crypto.randomUUID(),titulo:'Sorteio Cliente da Sorte',descricao:'Cada participante pode escolher apenas uma dezena.',premio:'Prêmio surpresa',status:'ativo',data:'2026-06-02'}
     ],
     participantes:[],
     ganhadores:[]
@@ -194,25 +207,49 @@
     if(page==='admin') adminPage.classList.remove('hidden');
     renderAll();
   }
+  function todasDezenas(){return Array.from({length:100},(_,i)=>String(i).padStart(2,'0'))}
+  function dezenasOcupadas(sorteioId){return db().participantes.filter(p=>p.sorteioId===sorteioId).map(p=>p.dezena)}
   function renderAll(){
     const data=db();
-    siteLogo.textContent=data.settings.nome; footerName.textContent=data.settings.rodape; year.textContent=new Date().getFullYear();
+    siteLogo.innerHTML='<span>'+data.settings.nome+'</span>'; footerName.textContent=data.settings.rodape; year.textContent=new Date().getFullYear();
     const ativos=data.sorteios.filter(s=>s.status==='ativo');
     countSorteios.textContent=data.sorteios.length; countParticipantes.textContent=data.participantes.length; countGanhadores.textContent=data.ganhadores.length;
-    sorteiosGrid.innerHTML=ativos.map(s=>`<div class="card sorteio"><span class="tag">ATIVO</span><h3>${s.titulo}</h3><p>${s.descricao}</p><div class="price">${s.premio}</div><p>Data: ${formatDate(s.data)}</p><button class="btn ok" onclick="openParticipar('${s.id}')">Participar</button></div>`).join('') || '<div class="card">Nenhum sorteio ativo no momento.</div>';
-    ganhadoresGrid.innerHTML=data.ganhadores.map(g=>`<div class="card"><span class="tag">GANHADOR</span><h3>${g.nome}</h3><p>Sorteio: ${g.sorteioTitulo}</p><div class="price">${g.premio}</div><p>WhatsApp: ${g.whats}</p><p>Data: ${formatDate(g.data)}</p></div>`).join('') || '<div class="card">Nenhum ganhador divulgado ainda.</div>';
+    sorteiosGrid.innerHTML=ativos.map(s=>{
+      const ocupadas=dezenasOcupadas(s.id).length;
+      const livres=100-ocupadas;
+      return `<div class="card sorteio"><div><span class="tag">ATIVO</span><h3>${s.titulo}</h3><p>${s.descricao}</p><div class="price">${s.premio}</div><p>Data: ${formatDate(s.data)}</p><div class="dezena-info"><span class="mini-tag">${livres} dezenas livres</span><span class="mini-tag">${ocupadas} escolhidas</span></div></div><button class="btn ok" onclick="openParticipar('${s.id}')">🎯 Quero Participar</button></div>`
+    }).join('') || '<div class="card">Nenhum sorteio ativo no momento.</div>';
+    ganhadoresGrid.innerHTML=data.ganhadores.map(g=>`<div class="card"><span class="tag">GANHADOR</span><h3>${g.nome}</h3><p>Sorteio: ${g.sorteioTitulo}</p><div class="price">${g.premio}</div><p>Dezena sorteada: <strong>${g.dezena||'-'}</strong></p><p>WhatsApp: ${g.whats}</p><p>Data: ${formatDate(g.data)}</p></div>`).join('') || '<div class="card">Nenhum ganhador divulgado ainda.</div>';
     renderAdmin();
   }
   function formatDate(d){ if(!d) return '-'; const [y,m,day]=d.split('-'); return `${day}/${m}/${y}`; }
-  function openParticipar(id){currentSorteioId=id; const s=db().sorteios.find(x=>x.id===id); participarInfo.innerHTML=`<p class="lead"><strong>${s.titulo}</strong><br>${s.premio}</p>`; participarModal.classList.remove('hidden')}
+  function openParticipar(id){
+    currentSorteioId=id; selectedDezena=null;
+    const data=db(); const s=data.sorteios.find(x=>x.id===id); const ocupadas=dezenasOcupadas(id);
+    participarInfo.innerHTML=`<p class="lead"><strong>${s.titulo}</strong><br>${s.premio}</p><div class="notice">Escolha uma dezena disponível. Cada pessoa pode participar com apenas 1 dezena neste sorteio.</div><div class="dezenas-grid">${todasDezenas().map(d=>`<button class="dezena-btn ${ocupadas.includes(d)?'taken':''}" ${ocupadas.includes(d)?'disabled':''} onclick="selecionarDezena('${d}')">${d}</button>`).join('')}</div><div id="dezenaEscolhida" class="notice hidden"></div>`;
+    participarModal.classList.remove('hidden')
+  }
+  function selecionarDezena(dezena){
+    selectedDezena=dezena;
+    document.querySelectorAll('.dezena-btn').forEach(btn=>btn.classList.remove('selected'));
+    [...document.querySelectorAll('.dezena-btn')].find(btn=>btn.textContent===dezena)?.classList.add('selected');
+    dezenaEscolhida.textContent='Dezena escolhida: '+dezena;
+    dezenaEscolhida.classList.remove('hidden');
+  }
   function closeModal(id){document.getElementById(id).classList.add('hidden')}
   function salvarParticipacao(){
     const nome=pNome.value.trim(), whats=pWhats.value.trim(), cidade=pCidade.value.trim();
     if(!nome||!whats) return alert('Preencha nome e WhatsApp.');
+    if(!selectedDezena) return alert('Escolha uma dezena para participar.');
     const data=db(); const s=data.sorteios.find(x=>x.id===currentSorteioId);
-    data.participantes.push({id:crypto.randomUUID(),sorteioId:s.id,sorteioTitulo:s.titulo,nome,whats,cidade,data:new Date().toISOString().slice(0,10)});
-    save(data); pNome.value=pWhats.value=pCidade.value=''; closeModal('participarModal'); alert('Participação confirmada! Boa sorte.');
+    const jaParticipou=data.participantes.some(p=>p.sorteioId===s.id && normalizarWhats(p.whats)===normalizarWhats(whats));
+    if(jaParticipou) return alert('Este WhatsApp já participou deste sorteio. É permitido apenas 1 dezena por pessoa.');
+    const dezenaJaEscolhida=data.participantes.some(p=>p.sorteioId===s.id && p.dezena===selectedDezena);
+    if(dezenaJaEscolhida) return alert('Essa dezena acabou de ser escolhida por outra pessoa. Escolha outra dezena.');
+    data.participantes.push({id:crypto.randomUUID(),sorteioId:s.id,sorteioTitulo:s.titulo,nome,whats,cidade,dezena:selectedDezena,data:new Date().toISOString().slice(0,10)});
+    save(data); pNome.value=pWhats.value=pCidade.value=''; selectedDezena=null; closeModal('participarModal'); alert('Participação confirmada! Sua dezena foi reservada. Boa sorte.');
   }
+  function normalizarWhats(w){return String(w||'').replace(/[^0-9]/g,'')}
   function openLogin(){loginModal.classList.remove('hidden')}
   function loginAdmin(){ if(adminSenha.value===ADMIN_PASSWORD){sessionStorage.setItem('adminLogado','sim');closeModal('loginModal');showPage('admin')} else alert('Senha incorreta.') }
   function logoutAdmin(){sessionStorage.removeItem('adminLogado');showPage('home')}
@@ -220,26 +257,26 @@
   function renderAdmin(){
     if(sessionStorage.getItem('adminLogado')!=='sim') return;
     const data=db();
-    tabDashboard.innerHTML=`<h2 class="section-title">Painel Admin</h2><div class="stats"><div class="stat"><strong>${data.sorteios.length}</strong>Sorteios</div><div class="stat"><strong>${data.participantes.length}</strong>Participantes</div><div class="stat"><strong>${data.ganhadores.length}</strong>Premiados</div></div><div class="notice">Use o painel para criar sorteios, cadastrar participantes, sortear ganhador e alterar a aparência.</div>`;
-    tabSorteios.innerHTML=`<h2 class="section-title">Gerenciar Sorteios</h2><div class="form"><input id="sTitulo" placeholder="Título do sorteio"><textarea id="sDesc" placeholder="Descrição"></textarea><input id="sPremio" placeholder="Prêmio"><input id="sData" type="date"><button class="btn ok" onclick="criarSorteio()">Criar Sorteio</button></div><br>${tableSorteios(data)}`;
+    tabDashboard.innerHTML=`<h2 class="section-title">Painel Admin</h2><div class="stats"><div class="stat"><strong>${data.sorteios.length}</strong>Sorteios</div><div class="stat"><strong>${data.participantes.length}</strong>Participantes</div><div class="stat"><strong>${data.ganhadores.length}</strong>Premiados</div></div><div class="notice">Agora o sorteio funciona por dezenas: cada pessoa escolhe 1 dezena, e a dezena escolhida fica indisponível para os próximos participantes.</div>`;
+    tabSorteios.innerHTML=`<h2 class="section-title">Gerenciar Sorteios</h2><div class="form"><input id="sTitulo" placeholder="Título do sorteio"><textarea id="sDesc" placeholder="Descrição"></textarea><input id="sPremio" placeholder="Prêmio"><input id="sData" type="date"><button class="btn ok" onclick="criarSorteio()">➕ Criar Sorteio</button></div><br>${tableSorteios(data)}`;
     tabParticipantes.innerHTML=`<h2 class="section-title">Participantes</h2>${tableParticipantes(data)}`;
-    tabPremiados.innerHTML=`<h2 class="section-title">Sortear Ganhador</h2><div class="form"><select id="drawSorteio">${data.sorteios.map(s=>`<option value="${s.id}">${s.titulo}</option>`).join('')}</select><button class="btn ok pulse" onclick="sortearGanhador()">Sortear Agora</button></div><br>${tableGanhadores(data)}`;
+    tabPremiados.innerHTML=`<h2 class="section-title">Sortear Ganhador</h2><div class="form"><select id="drawSorteio">${data.sorteios.map(s=>`<option value="${s.id}">${s.titulo}</option>`).join('')}</select><div class="notice">O ganhador será escolhido entre os participantes cadastrados com suas dezenas.</div><button class="btn ok pulse" onclick="sortearGanhador()">🎲 Sortear Agora</button></div><br>${tableGanhadores(data)}`;
     tabAparencia.innerHTML=`<h2 class="section-title">Aparência</h2><div class="form"><label>Nome do site</label><input id="setNome" value="${data.settings.nome}"><label>Rodapé/assinatura</label><input id="setRodape" value="${data.settings.rodape}"><button class="btn ok" onclick="salvarAparencia()">Salvar Aparência</button><button class="btn danger" onclick="limparTudo()">Limpar todos os dados</button></div>`;
   }
-  function tableSorteios(data){return `<table class="table"><tr><th>Título</th><th>Prêmio</th><th>Status</th><th>Ação</th></tr>${data.sorteios.map(s=>`<tr><td>${s.titulo}</td><td>${s.premio}</td><td>${s.status}</td><td><button class="btn secondary" onclick="toggleSorteio('${s.id}')">Ativar/Pausar</button> <button class="btn danger" onclick="excluirSorteio('${s.id}')">Excluir</button></td></tr>`).join('')}</table>`}
-  function tableParticipantes(data){return `<table class="table"><tr><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Sorteio</th></tr>${data.participantes.map(p=>`<tr><td>${p.nome}</td><td>${p.whats}</td><td>${p.cidade||'-'}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table>`}
-  function tableGanhadores(data){return `<table class="table"><tr><th>Nome</th><th>Sorteio</th><th>Prêmio</th><th>Data</th></tr>${data.ganhadores.map(g=>`<tr><td>${g.nome}</td><td>${g.sorteioTitulo}</td><td>${g.premio}</td><td>${formatDate(g.data)}</td></tr>`).join('')}</table>`}
+  function tableSorteios(data){return `<div class="table-wrap"><table class="table"><tr><th>Título</th><th>Prêmio</th><th>Dezenas</th><th>Status</th><th>Ação</th></tr>${data.sorteios.map(s=>{const qtd=dezenasOcupadas(s.id).length;return `<tr><td>${s.titulo}</td><td>${s.premio}</td><td>${qtd}/100</td><td>${s.status}</td><td><button class="btn secondary" onclick="toggleSorteio('${s.id}')">Ativar/Pausar</button> <button class="btn danger" onclick="excluirSorteio('${s.id}')">Excluir</button></td></tr>`}).join('')}</table></div>`}
+  function tableParticipantes(data){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>WhatsApp</th><th>Cidade</th><th>Sorteio</th></tr>${data.participantes.map(p=>`<tr><td><strong>${p.dezena||'-'}</strong></td><td>${p.nome}</td><td>${p.whats}</td><td>${p.cidade||'-'}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table></div>`}
+  function tableGanhadores(data){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>Sorteio</th><th>Prêmio</th><th>Data</th></tr>${data.ganhadores.map(g=>`<tr><td><strong>${g.dezena||'-'}</strong></td><td>${g.nome}</td><td>${g.sorteioTitulo}</td><td>${g.premio}</td><td>${formatDate(g.data)}</td></tr>`).join('')}</table></div>`}
   function criarSorteio(){
     const data=db(); if(!sTitulo.value||!sPremio.value) return alert('Preencha título e prêmio.');
-    data.sorteios.push({id:crypto.randomUUID(),titulo:sTitulo.value,descricao:sDesc.value,premio:sPremio.value,status:'ativo',data:sData.value||new Date().toISOString().slice(0,10)}); save(data);
+    data.sorteios.push({id:crypto.randomUUID(),titulo:sTitulo.value,descricao:sDesc.value||'Escolha uma dezena disponível para participar.',premio:sPremio.value,status:'ativo',data:sData.value||new Date().toISOString().slice(0,10)}); save(data);
   }
   function toggleSorteio(id){const data=db(); const s=data.sorteios.find(x=>x.id===id); s.status=s.status==='ativo'?'pausado':'ativo'; save(data)}
   function excluirSorteio(id){if(!confirm('Excluir este sorteio?'))return; const data=db(); data.sorteios=data.sorteios.filter(s=>s.id!==id); data.participantes=data.participantes.filter(p=>p.sorteioId!==id); save(data)}
   function sortearGanhador(){
     const data=db(); const sid=drawSorteio.value; const lista=data.participantes.filter(p=>p.sorteioId===sid); if(!lista.length)return alert('Nenhum participante nesse sorteio.');
     const p=lista[Math.floor(Math.random()*lista.length)]; const s=data.sorteios.find(x=>x.id===sid);
-    const g={id:crypto.randomUUID(),nome:p.nome,whats:p.whats,sorteioId:sid,sorteioTitulo:s.titulo,premio:s.premio,data:new Date().toISOString().slice(0,10)};
-    data.ganhadores.unshift(g); save(data); alert('Ganhador: '+g.nome);
+    const g={id:crypto.randomUUID(),nome:p.nome,whats:p.whats,dezena:p.dezena,sorteioId:sid,sorteioTitulo:s.titulo,premio:s.premio,data:new Date().toISOString().slice(0,10)};
+    data.ganhadores.unshift(g); save(data); alert('Ganhador: '+g.nome+' | Dezena: '+g.dezena);
   }
   function salvarAparencia(){const data=db(); data.settings.nome=setNome.value; data.settings.rodape=setRodape.value; save(data)}
   function limparTudo(){if(confirm('Tem certeza? Isso apaga sorteios, participantes e ganhadores.')){localStorage.removeItem('sorteioKellyDB');renderAll();showPage('home')}}
