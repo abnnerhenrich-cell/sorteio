@@ -193,12 +193,11 @@
         <h2 style="color:var(--green);margin-bottom:10px">Como funciona?</h2>
         <div class="steps">
           <div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div>
-          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome e WhatsApp.</p></div></div>
-          <div class="step"><b>3</b><div><strong>Escolha sua dezena</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Faça sua escolha de dezena de 00 até 99.</p></div></div>
-          <div class="step"><b>4</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
-       </div>
+          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome, WhatsApp e cidade.</p></div></div>
+          <div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
+        </div>
+      </div>
     </div>
-   </div>
     <h2 class="section-title" id="sorteios">Sorteios Ativos</h2>
     <div class="grid" id="sorteiosGrid"></div>
   </section>
@@ -263,7 +262,7 @@
     onSnapshot, query, where, getDocs, serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-  const firebaseConfig = {
+   const firebaseConfig = {
   apiKey: "AIzaSyAP0ITU9ZuHkEpZ8T1SED8kKdTB8nvmbVA",
   authDomain: "sorteio-kelly.firebaseapp.com",
   projectId: "sorteio-kelly",
@@ -418,7 +417,7 @@
     tabDashboard.innerHTML=`<h2 class="section-title">Painel Admin</h2><div class="stats"><div class="stat"><strong>${sorteios.length}</strong>Sorteios</div><div class="stat"><strong>${participantes.length}</strong>Participantes</div><div class="stat"><strong>${ganhadores.length}</strong>Premiados</div></div><div class="notice">Firebase ativo: as dezenas e participantes atualizam em tempo real entre celulares diferentes.</div>`;
     tabSorteios.innerHTML=`<h2 class="section-title">Gerenciar Sorteios</h2><div class="form"><input id="sTitulo" placeholder="Título do sorteio"><textarea id="sDesc" placeholder="Descrição"></textarea><input id="sPremio" placeholder="Prêmio"><input id="sData" type="date"><button class="btn ok" onclick="criarSorteio()">➕ Criar Sorteio</button></div><br>${tableSorteios()}`;
     tabParticipantes.innerHTML=`<h2 class="section-title">Participantes</h2>${tableParticipantes()}`;
-    tabPremiados.innerHTML=`<h2 class="section-title">Sortear Ganhador</h2><div class="form"><select id="drawSorteio">${sorteios.map(s=>`<option value="${s.id}">${s.titulo}</option>`).join('')}</select><div class="notice">O ganhador será escolhido entre os participantes cadastrados com suas dezenas.</div><button class="btn ok pulse" onclick="sortearGanhador()">🎲 Sortear Agora</button></div><br>${tableGanhadores()}`;
+    tabPremiados.innerHTML=`<h2 class="section-title">Selecionar Ganhador</h2><div class="form"><div class="notice">Escolha manualmente o participante que acertou a dezena para marcar como ganhador.</div><select id="ganhadorManual"><option value="">Selecione o ganhador pela dezena</option>${participantes.map(p=>`<option value="${p.id}">${p.dezena} - ${p.nome} | ${p.sorteioTitulo}</option>`).join('')}</select><button class="btn ok pulse" onclick="sortearGanhador()">🏆 Confirmar Ganhador</button></div><br>${tableGanhadores()}`;
     tabAparencia.innerHTML=`<h2 class="section-title">Aparência</h2><div class="form"><label>Nome do site</label><input id="setNome" value="${settings.nome}"><label>Rodapé/assinatura</label><input id="setRodape" value="${settings.rodape}"><button class="btn ok" onclick="salvarAparencia()">Salvar Aparência</button><button class="btn danger" onclick="limparTudo()">Limpar todos os dados</button></div>`;
   }
 
@@ -453,22 +452,25 @@
   }
 
   async function sortearGanhador(){
-    const sid=drawSorteio.value;
-    const lista=participantes.filter(p=>p.sorteioId===sid);
-    if(!lista.length) return alert('Nenhum participante nesse sorteio.');
-    const p=lista[Math.floor(Math.random()*lista.length)];
-    const s=sorteios.find(x=>x.id===sid);
+    const participanteId=ganhadorManual.value;
+    if(!participanteId) return alert('Selecione um participante para marcar como ganhador.');
+    const p=participantes.find(x=>x.id===participanteId);
+    if(!p) return alert('Participante não encontrado. Atualize a página e tente novamente.');
+    const s=sorteios.find(x=>x.id===p.sorteioId);
+    const jaPremiado=ganhadores.some(g=>g.participanteId===p.id || (g.sorteioId===p.sorteioId && g.dezena===p.dezena));
+    if(jaPremiado) return alert('Esse participante/dezena já está marcado como ganhador.');
     await addDoc(collection(firestore,'ganhadores'),{
+      participanteId:p.id,
       nome:p.nome,
       whats:p.whats,
       dezena:p.dezena,
-      sorteioId:sid,
-      sorteioTitulo:s.titulo,
-      premio:s.premio,
+      sorteioId:p.sorteioId,
+      sorteioTitulo:p.sorteioTitulo,
+      premio:s?.premio||'Prêmio',
       data:new Date().toISOString().slice(0,10),
       criadoEm:serverTimestamp()
     });
-    alert('Ganhador: '+p.nome+' | Dezena: '+p.dezena);
+    alert('Ganhador confirmado: '+p.nome+' | Dezena: '+p.dezena);
   }
 
   async function salvarAparencia(){
