@@ -123,10 +123,11 @@
         <h2 style="color:var(--green);margin-bottom:10px">Como funciona?</h2>
         <div class="steps">
           <div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div>
-          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome e WhatsApp.</p></div></div>
+          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome, WhatsApp e cidade.</p></div></div>
           <div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
         </div>
-       </div>
+        <div class="notice">Para publicar profissionalmente com Pix automático, banco de dados e login real, esta base pode ser evoluída depois.</div>
+      </div>
     </div>
     <h2 class="section-title" id="sorteios">Sorteios Ativos</h2>
     <div class="grid" id="sorteiosGrid"></div>
@@ -169,6 +170,7 @@
     <div class="form">
       <input id="pNome" placeholder="Seu nome completo" />
       <input id="pWhats" placeholder="WhatsApp" />
+      
       <button class="btn ok" onclick="salvarParticipacao()">✅ Confirmar Participação</button>
     </div>
   </div>
@@ -177,7 +179,7 @@
 <div id="loginModal" class="modal hidden">
   <div class="modal-box">
     <div class="modal-head"><h2>🔐 Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
-    <div class="notice"> <strong></strong>. </div>
+    <div class="notice">Senha inicial: <strong>admin123</strong>. Troque no código antes de publicar.</div>
     <div class="form">
       <input id="adminSenha" type="password" placeholder="Senha do administrador" />
       <button class="btn" onclick="loginAdmin()">🚀 Entrar no Painel</button>
@@ -186,7 +188,7 @@
 </div>
 
 <script>
-  const ADMIN_PASSWORD = '06092025Marjorie';
+  const ADMIN_PASSWORD = 'admin123';
   let currentSorteioId = null;
   let selectedDezena = null;
   const initialData = {
@@ -247,7 +249,7 @@
     const dezenaJaEscolhida=data.participantes.some(p=>p.sorteioId===s.id && p.dezena===selectedDezena);
     if(dezenaJaEscolhida) return alert('Essa dezena acabou de ser escolhida por outra pessoa. Escolha outra dezena.');
     data.participantes.push({id:crypto.randomUUID(),sorteioId:s.id,sorteioTitulo:s.titulo,nome,whats,dezena:selectedDezena,data:new Date().toISOString().slice(0,10)});
-    save(data); pNome.value=pWhats.value''; selectedDezena=null; closeModal('participarModal'); alert('Participação confirmada! Sua dezena foi reservada. Boa sorte.');
+    save(data); pNome.value=pWhats.value=''; selectedDezena=null; closeModal('participarModal'); alert('Participação confirmada! Sua dezena foi reservada. Boa sorte.');
   }
   function normalizarWhats(w){return String(w||'').replace(/[^0-9]/g,'')}
   function openLogin(){loginModal.classList.remove('hidden')}
@@ -264,7 +266,7 @@
     tabAparencia.innerHTML=`<h2 class="section-title">Aparência</h2><div class="form"><label>Nome do site</label><input id="setNome" value="${data.settings.nome}"><label>Rodapé/assinatura</label><input id="setRodape" value="${data.settings.rodape}"><button class="btn ok" onclick="salvarAparencia()">Salvar Aparência</button><button class="btn danger" onclick="limparTudo()">Limpar todos os dados</button></div>`;
   }
   function tableSorteios(data){return `<div class="table-wrap"><table class="table"><tr><th>Título</th><th>Prêmio</th><th>Dezenas</th><th>Status</th><th>Ação</th></tr>${data.sorteios.map(s=>{const qtd=dezenasOcupadas(s.id).length;return `<tr><td>${s.titulo}</td><td>${s.premio}</td><td>${qtd}/100</td><td>${s.status}</td><td><button class="btn secondary" onclick="toggleSorteio('${s.id}')">Ativar/Pausar</button> <button class="btn danger" onclick="excluirSorteio('${s.id}')">Excluir</button></td></tr>`}).join('')}</table></div>`}
-  function tableParticipantes(data){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>WhatsApp</th></th><th>Sorteio</th></tr>${data.participantes.map(p=>`<tr><td><strong>${p.dezena||'-'}</strong></td><td>${p.nome}</td><td>${p.whats||'-'}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table></div>`}
+  function tableParticipantes(data){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>WhatsApp</th><th>Sorteio</th></tr>${data.participantes.map(p=>`<tr><td><strong>${p.dezena||'-'}</strong></td><td>${p.nome}</td><td>${p.whats}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table></div>`}
   function tableGanhadores(data){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>Sorteio</th><th>Prêmio</th><th>Data</th></tr>${data.ganhadores.map(g=>`<tr><td><strong>${g.dezena||'-'}</strong></td><td>${g.nome}</td><td>${g.sorteioTitulo}</td><td>${g.premio}</td><td>${formatDate(g.data)}</td></tr>`).join('')}</table></div>`}
   function criarSorteio(){
     const data=db(); if(!sTitulo.value||!sPremio.value) return alert('Preencha título e prêmio.');
