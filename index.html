@@ -169,7 +169,7 @@
     <div id="participarInfo"></div>
     <div class="form">
       <input id="pNome" placeholder="Seu nome completo" />
-      <input id="pWhats" placeholder="WhatsApp" />
+      <input id="pWhats" inputmode="numeric" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999" />
       
       <button class="btn ok" onclick="salvarParticipacao()">✅ Confirmar Participação</button>
     </div>
@@ -308,11 +308,13 @@
 
   async function salvarParticipacao(){
     const nome=pNome.value.trim(), whats=pWhats.value.trim();
+    const whatsLimpo = normalizarWhats(whats);
     if(!nome||!whats) return alert('Preencha nome e WhatsApp.');
+    if(whatsLimpo.length < 10 || whatsLimpo.length > 11) return alert('Digite um WhatsApp válido usando apenas números, com DDD. Exemplo: 14999999999');
     if(!selectedDezena) return alert('Escolha uma dezena para participar.');
     const s=sorteios.find(x=>x.id===currentSorteioId);
 
-    const qWhats=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('whatsLimpo','==',normalizarWhats(whats)));
+    const qWhats=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('whatsLimpo','==',whatsLimpo));
     const snapWhats=await getDocs(qWhats);
     if(!snapWhats.empty) return alert('Este WhatsApp já participou deste sorteio. É permitido apenas 1 dezena por pessoa.');
 
@@ -325,7 +327,7 @@
       sorteioTitulo:s.titulo,
       nome,
       whats,
-      whatsLimpo:normalizarWhats(whats),
+      whatsLimpo:whatsLimpo,
       dezena:selectedDezena,
       data:new Date().toISOString().slice(0,10),
       criadoEm:serverTimestamp()
