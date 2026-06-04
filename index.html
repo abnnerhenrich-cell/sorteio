@@ -5,485 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sorteios da Kelly</title>
   <style>
-    :root{
-      --bg:#020617;
-      --bg2:#061a3a;
-      --card:#091b36;
-      --card2:#123264;
-      --glass:rgba(255,255,255,.08);
-      --blue:#00c8ff;
-      --blue2:#246bff;
-      --green:#39ff9b;
-      --purple:#8b5cff;
-      --yellow:#ffe45e;
-      --white:#ffffff;
-      --muted:#b7c7df;
-      --danger:#ff3b65;
-      --shadow:0 22px 60px rgba(0,0,0,.42);
-      --glow:0 0 28px rgba(0,200,255,.45);
-      --soft:rgba(255,255,255,.065);
-    }
-    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,Helvetica,sans-serif}
-    html{scroll-behavior:smooth}
-    body{min-height:100vh;color:var(--white);background:
-      radial-gradient(circle at 8% 8%,rgba(0,200,255,.32),transparent 30%),
-      radial-gradient(circle at 85% 12%,rgba(57,255,155,.20),transparent 28%),
-      radial-gradient(circle at 50% 95%,rgba(36,107,255,.24),transparent 28%),
-      linear-gradient(145deg,var(--bg),var(--bg2) 50%,#02040d);overflow-x:hidden}
-    body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 76%)}
-    body:after{content:"";position:fixed;inset:auto -120px -180px -120px;height:320px;background:radial-gradient(circle,rgba(0,200,255,.18),transparent 60%);pointer-events:none;filter:blur(10px)}
-    a{text-decoration:none;color:inherit}.hidden{display:none!important}
-    header{position:sticky;top:0;z-index:20;background:rgba(2,6,23,.78);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,200,255,.20)}
-    .nav{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px}
-    .logo{display:flex;align-items:center;gap:10px;font-weight:950;font-size:22px;letter-spacing:.4px;color:var(--white)}
-    .logo:before{content:"🎁";width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:var(--glow)}
-    .logo span{color:var(--blue);text-shadow:0 0 16px rgba(0,200,255,.8)}
-    .menu{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
-    button,.btn{border:0;border-radius:17px;padding:12px 17px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-weight:950;cursor:pointer;box-shadow:0 14px 30px rgba(0,115,255,.30);transition:.22s ease;letter-spacing:.1px;display:inline-flex;align-items:center;justify-content:center;gap:7px}
-    button:hover,.btn:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 18px 38px rgba(0,200,255,.38)}
-    button:active,.btn:active{transform:scale(.98)}
-    .secondary{background:rgba(255,255,255,.085)!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.13)!important;color:#e5f1ff!important}
-    .secondary:hover{background:rgba(0,200,255,.13)!important;border-color:rgba(0,200,255,.42)!important}
-    .ok{background:linear-gradient(135deg,var(--green),#00b86b)!important;color:#04160d!important;box-shadow:0 14px 30px rgba(57,255,155,.24)!important}
-    .danger{background:linear-gradient(135deg,#ff4e76,#b60037)!important;color:white!important;box-shadow:0 14px 30px rgba(255,59,101,.22)!important}
-    .ghost{background:transparent!important;border:1px solid rgba(0,200,255,.40)!important;box-shadow:none!important;color:var(--blue)!important}
-    .wrap{max-width:1180px;margin:auto;padding:26px 16px 82px;position:relative;z-index:1}
-    .hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch;padding:30px 0 22px}
-    .hero-card,.card{position:relative;background:linear-gradient(180deg,rgba(18,50,100,.82),rgba(7,19,40,.94));border:1px solid rgba(0,200,255,.20);border-radius:32px;padding:26px;box-shadow:var(--shadow);overflow:hidden}
-    .hero-card:after,.card:after{content:"";position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(0,200,255,.24),transparent 36%,rgba(57,255,155,.16));pointer-events:none;border-radius:inherit;opacity:.75}
-    .hero-card:before,.card:before{content:"";position:absolute;right:-60px;top:-70px;width:180px;height:180px;border-radius:50%;background:rgba(0,200,255,.12);filter:blur(8px)}
-    .hero-card>* ,.card>*{position:relative;z-index:1}
-    .badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(57,255,155,.13);border:1px solid rgba(57,255,155,.34);color:var(--green);font-weight:950;font-size:13px;margin-bottom:16px}
-    h1{font-size:48px;line-height:1.02;margin-bottom:15px;text-transform:uppercase;letter-spacing:-1.4px}
-    h1 span{display:block;color:var(--green);text-shadow:0 0 20px rgba(57,255,155,.72)}
-    .lead{color:var(--muted);font-size:18px;line-height:1.56;margin-bottom:18px}
-    .hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
-    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:21px}
-    .stat{background:rgba(255,255,255,.07);border-radius:22px;padding:17px;text-align:center;border:1px solid rgba(255,255,255,.10);transition:.22s}
-    .stat:hover{transform:translateY(-2px);border-color:rgba(0,200,255,.35)}
-    .stat strong{display:block;font-size:29px;color:var(--yellow);text-shadow:0 0 14px rgba(255,228,94,.46)}
-    .steps{display:grid;gap:13px;margin-top:15px}
-    .step{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.058);border:1px solid rgba(255,255,255,.09);padding:14px;border-radius:20px;transition:.22s}
-    .step:hover{background:rgba(255,255,255,.085);transform:translateX(3px)}
-    .step b{min-width:36px;height:36px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:var(--glow)}
-    .section-title{font-size:29px;margin:26px 0 16px;color:var(--white);display:flex;align-items:center;gap:10px}
-    .section-title:before{content:"";width:8px;height:32px;border-radius:99px;background:linear-gradient(var(--green),var(--blue));box-shadow:0 0 18px var(--blue)}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-    .sorteio{min-height:292px;display:flex;flex-direction:column;justify-content:space-between;transition:.25s}
-    .sorteio:hover{transform:translateY(-5px);border-color:rgba(57,255,155,.34)}
-    .tag{display:inline-flex;align-items:center;width:max-content;gap:7px;padding:8px 12px;border-radius:999px;background:rgba(57,255,155,.14);color:var(--green);font-weight:950;font-size:12px;margin-bottom:12px;border:1px solid rgba(57,255,155,.38);letter-spacing:.25px}
-    .tag:before{content:"●";font-size:10px}.sorteio h3{font-size:23px;margin-bottom:9px}.sorteio p{color:var(--muted);line-height:1.46;margin-bottom:10px}.price{font-size:31px;font-weight:950;color:var(--yellow);margin:12px 0;text-shadow:0 0 15px rgba(255,228,94,.38)}
-    .form{display:grid;gap:12px;margin-top:12px}label{font-size:13px;color:var(--muted);font-weight:850}input,select,textarea{width:100%;padding:14px 15px;border-radius:17px;border:1px solid rgba(255,255,255,.15);background:rgba(2,10,25,.78);color:#fff;outline:none;transition:.2s;font-size:15px}input::placeholder,textarea::placeholder{color:#7890ad}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,200,255,.13)}textarea{min-height:90px;resize:vertical}
-    .modal{position:fixed;inset:0;background:rgba(0,0,0,.80);display:flex;align-items:flex-start;justify-content:center;padding:16px;z-index:60;overflow-y:auto}.modal-box{width:min(575px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#0b2246,#071326);border:1px solid rgba(0,200,255,.42);border-radius:30px;padding:25px;box-shadow:0 0 60px rgba(0,200,255,.38)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.close{background:rgba(255,255,255,.09)!important;color:#fff!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:15px!important;width:43px;height:43px;padding:0!important;font-size:24px;box-shadow:none!important}
-    .admin-layout{display:grid;grid-template-columns:255px 1fr;gap:18px}.sidebar{background:rgba(7,19,40,.90);border:1px solid rgba(0,200,255,.20);border-radius:28px;padding:14px;height:max-content;position:sticky;top:88px;box-shadow:var(--shadow)}.sidebar button{width:100%;margin:5px 0;text-align:left;background:rgba(255,255,255,.085);box-shadow:none;border:1px solid rgba(255,255,255,.09);justify-content:flex-start}.sidebar button:hover{background:rgba(0,200,255,.14)!important;border-color:rgba(0,200,255,.38)}
-    .table-wrap{overflow:auto;border-radius:19px;border:1px solid rgba(255,255,255,.09)}.table{width:100%;border-collapse:collapse;min-width:650px;background:rgba(255,255,255,.045)}.table th,.table td{padding:13px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px}.table th{color:var(--blue);background:rgba(0,200,255,.07);font-size:13px;text-transform:uppercase;letter-spacing:.4px}.table tr:hover td{background:rgba(255,255,255,.035)}
-    .notice{background:rgba(255,228,94,.12);border:1px solid rgba(255,228,94,.34);padding:14px;border-radius:18px;color:#fff6bf;margin:12px 0;line-height:1.45}
-    .dezenas-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin:14px 0;max-height:310px;overflow:auto;padding:4px}
-    .dezena-btn{padding:10px 0!important;border-radius:13px!important;background:rgba(255,255,255,.09)!important;border:1px solid rgba(0,200,255,.24)!important;box-shadow:none!important;font-size:14px!important;color:#fff!important}
-    .dezena-btn:hover{background:linear-gradient(135deg,var(--blue),var(--blue2))!important}
-    .dezena-btn.selected{background:linear-gradient(135deg,var(--green),#00b86b)!important;color:#04160d!important;border-color:rgba(57,255,155,.8)!important;box-shadow:0 0 18px rgba(57,255,155,.35)!important}
-    .dezena-btn.taken{background:rgba(255,59,101,.16)!important;color:#ff9bae!important;border-color:rgba(255,59,101,.35)!important;cursor:not-allowed!important;text-decoration:line-through;opacity:.68}
-    .dezena-info{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}.mini-tag{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--muted)}.winner{font-size:34px;text-align:center;padding:22px;border-radius:22px;background:rgba(57,255,155,.1);color:var(--green);font-weight:950;text-shadow:0 0 18px var(--green)}
-    footer{text-align:center;color:var(--muted);padding:28px;border-top:1px solid rgba(255,255,255,.08);background:rgba(2,5,14,.46)}
+    :root{--bg:#020617;--bg2:#061a3a;--card:#091b36;--card2:#123264;--glass:rgba(255,255,255,.08);--blue:#00c8ff;--blue2:#246bff;--green:#39ff9b;--purple:#8b5cff;--yellow:#ffe45e;--white:#ffffff;--muted:#b7c7df;--danger:#ff3b65;--shadow:0 22px 60px rgba(0,0,0,.42);--glow:0 0 28px rgba(0,200,255,.45);--soft:rgba(255,255,255,.065)}
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,Arial,Helvetica,sans-serif}html{scroll-behavior:smooth}body{min-height:100vh;color:var(--white);background:radial-gradient(circle at 8% 8%,rgba(0,200,255,.32),transparent 30%),radial-gradient(circle at 85% 12%,rgba(57,255,155,.20),transparent 28%),radial-gradient(circle at 50% 95%,rgba(36,107,255,.24),transparent 28%),linear-gradient(145deg,var(--bg),var(--bg2) 50%,#02040d);overflow-x:hidden}body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:44px 44px;mask-image:linear-gradient(to bottom,black,transparent 76%)}body:after{content:"";position:fixed;inset:auto -120px -180px -120px;height:320px;background:radial-gradient(circle,rgba(0,200,255,.18),transparent 60%);pointer-events:none;filter:blur(10px)}
+    a{text-decoration:none;color:inherit}.hidden{display:none!important}header{position:sticky;top:0;z-index:20;background:rgba(2,6,23,.78);backdrop-filter:blur(20px);border-bottom:1px solid rgba(0,200,255,.20)}.nav{max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:12px}.logo{display:flex;align-items:center;gap:10px;font-weight:950;font-size:22px;letter-spacing:.4px;color:var(--white)}.logo:before{content:"🎁";width:44px;height:44px;display:grid;place-items:center;border-radius:16px;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:var(--glow)}.logo span{color:var(--blue);text-shadow:0 0 16px rgba(0,200,255,.8)}.menu{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+    button,.btn{border:0;border-radius:17px;padding:12px 17px;background:linear-gradient(135deg,var(--blue),var(--blue2));color:#fff;font-weight:950;cursor:pointer;box-shadow:0 14px 30px rgba(0,115,255,.30);transition:.22s ease;letter-spacing:.1px;display:inline-flex;align-items:center;justify-content:center;gap:7px}button:hover,.btn:hover{transform:translateY(-2px);filter:brightness(1.12);box-shadow:0 18px 38px rgba(0,200,255,.38)}button:active,.btn:active{transform:scale(.98)}.secondary{background:rgba(255,255,255,.085)!important;box-shadow:none!important;border:1px solid rgba(255,255,255,.13)!important;color:#e5f1ff!important}.secondary:hover{background:rgba(0,200,255,.13)!important;border-color:rgba(0,200,255,.42)!important}.ok{background:linear-gradient(135deg,var(--green),#00b86b)!important;color:#04160d!important;box-shadow:0 14px 30px rgba(57,255,155,.24)!important}.danger{background:linear-gradient(135deg,#ff4e76,#b60037)!important;color:white!important;box-shadow:0 14px 30px rgba(255,59,101,.22)!important}.ghost{background:transparent!important;border:1px solid rgba(0,200,255,.40)!important;box-shadow:none!important;color:var(--blue)!important}
+    .wrap{max-width:1180px;margin:auto;padding:26px 16px 82px;position:relative;z-index:1}.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:22px;align-items:stretch;padding:30px 0 22px}.hero-card,.card{position:relative;background:linear-gradient(180deg,rgba(18,50,100,.82),rgba(7,19,40,.94));border:1px solid rgba(0,200,255,.20);border-radius:32px;padding:26px;box-shadow:var(--shadow);overflow:hidden}.hero-card:after,.card:after{content:"";position:absolute;inset:-1px;background:linear-gradient(135deg,rgba(0,200,255,.24),transparent 36%,rgba(57,255,155,.16));pointer-events:none;border-radius:inherit;opacity:.75}.hero-card:before,.card:before{content:"";position:absolute;right:-60px;top:-70px;width:180px;height:180px;border-radius:50%;background:rgba(0,200,255,.12);filter:blur(8px)}.hero-card>* ,.card>*{position:relative;z-index:1}.badge{display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border-radius:999px;background:rgba(57,255,155,.13);border:1px solid rgba(57,255,155,.34);color:var(--green);font-weight:950;font-size:13px;margin-bottom:16px}
+    h1{font-size:48px;line-height:1.02;margin-bottom:15px;text-transform:uppercase;letter-spacing:-1.4px}h1 span{display:block;color:var(--green);text-shadow:0 0 20px rgba(57,255,155,.72)}.lead{color:var(--muted);font-size:18px;line-height:1.56;margin-bottom:18px}.hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:21px}.stat{background:rgba(255,255,255,.07);border-radius:22px;padding:17px;text-align:center;border:1px solid rgba(255,255,255,.10);transition:.22s}.stat:hover{transform:translateY(-2px);border-color:rgba(0,200,255,.35)}.stat strong{display:block;font-size:29px;color:var(--yellow);text-shadow:0 0 14px rgba(255,228,94,.46)}.steps{display:grid;gap:13px;margin-top:15px}.step{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.058);border:1px solid rgba(255,255,255,.09);padding:14px;border-radius:20px;transition:.22s}.step:hover{background:rgba(255,255,255,.085);transform:translateX(3px)}.step b{min-width:36px;height:36px;display:grid;place-items:center;border-radius:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));box-shadow:var(--glow)}
+    .section-title{font-size:29px;margin:26px 0 16px;color:var(--white);display:flex;align-items:center;gap:10px}.section-title:before{content:"";width:8px;height:32px;border-radius:99px;background:linear-gradient(var(--green),var(--blue));box-shadow:0 0 18px var(--blue)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.sorteio{min-height:292px;display:flex;flex-direction:column;justify-content:space-between;transition:.25s}.sorteio:hover{transform:translateY(-5px);border-color:rgba(57,255,155,.34)}.tag{display:inline-flex;align-items:center;width:max-content;gap:7px;padding:8px 12px;border-radius:999px;background:rgba(57,255,155,.14);color:var(--green);font-weight:950;font-size:12px;margin-bottom:12px;border:1px solid rgba(57,255,155,.38);letter-spacing:.25px}.tag:before{content:"●";font-size:10px}.sorteio h3{font-size:23px;margin-bottom:9px}.sorteio p{color:var(--muted);line-height:1.46;margin-bottom:10px}.price{font-size:31px;font-weight:950;color:var(--yellow);margin:12px 0;text-shadow:0 0 15px rgba(255,228,94,.38)}
+    .form{display:grid;gap:12px;margin-top:12px}label{font-size:13px;color:var(--muted);font-weight:850}input,select,textarea{width:100%;padding:14px 15px;border-radius:17px;border:1px solid rgba(255,255,255,.15);background:rgba(2,10,25,.78);color:#fff;outline:none;transition:.2s;font-size:15px}input::placeholder,textarea::placeholder{color:#7890ad}input:focus,select:focus,textarea:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(0,200,255,.13)}textarea{min-height:90px;resize:vertical}.modal{position:fixed;inset:0;background:rgba(0,0,0,.80);display:flex;align-items:flex-start;justify-content:center;padding:16px;z-index:60;overflow-y:auto}.modal-box{width:min(575px,100%);max-height:calc(100vh - 32px);overflow-y:auto;background:linear-gradient(180deg,#0b2246,#071326);border:1px solid rgba(0,200,255,.42);border-radius:30px;padding:25px;box-shadow:0 0 60px rgba(0,200,255,.38)}.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.close{background:rgba(255,255,255,.09)!important;color:#fff!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:15px!important;width:43px;height:43px;padding:0!important;font-size:24px;box-shadow:none!important}
+    .admin-layout{display:grid;grid-template-columns:255px 1fr;gap:18px}.sidebar{background:rgba(7,19,40,.90);border:1px solid rgba(0,200,255,.20);border-radius:28px;padding:14px;height:max-content;position:sticky;top:88px;box-shadow:var(--shadow)}.sidebar button{width:100%;margin:5px 0;text-align:left;background:rgba(255,255,255,.085);box-shadow:none;border:1px solid rgba(255,255,255,.09);justify-content:flex-start}.sidebar button:hover{background:rgba(0,200,255,.14)!important;border-color:rgba(0,200,255,.38)}.table-wrap{overflow:auto;border-radius:19px;border:1px solid rgba(255,255,255,.09)}.table{width:100%;border-collapse:collapse;min-width:650px;background:rgba(255,255,255,.045)}.table th,.table td{padding:13px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:14px}.table th{color:var(--blue);background:rgba(0,200,255,.07);font-size:13px;text-transform:uppercase;letter-spacing:.4px}.table tr:hover td{background:rgba(255,255,255,.035)}.notice{background:rgba(255,228,94,.12);border:1px solid rgba(255,228,94,.34);padding:14px;border-radius:18px;color:#fff6bf;margin:12px 0;line-height:1.45}
+    .dezenas-grid{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin:14px 0;max-height:310px;overflow:auto;padding:4px}.dezena-btn{padding:10px 0!important;border-radius:13px!important;background:rgba(255,255,255,.09)!important;border:1px solid rgba(0,200,255,.24)!important;box-shadow:none!important;font-size:14px!important;color:#fff!important}.dezena-btn:hover{background:linear-gradient(135deg,var(--blue),var(--blue2))!important}.dezena-btn.selected{background:linear-gradient(135deg,var(--green),#00b86b)!important;color:#04160d!important;border-color:rgba(57,255,155,.8)!important;box-shadow:0 0 18px rgba(57,255,155,.35)!important}.dezena-btn.taken{background:rgba(255,59,101,.16)!important;color:#ff9bae!important;border-color:rgba(255,59,101,.35)!important;cursor:not-allowed!important;text-decoration:line-through;opacity:.68}.dezena-info{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 2px}.mini-tag{font-size:12px;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--muted)}.winner{font-size:34px;text-align:center;padding:22px;border-radius:22px;background:rgba(57,255,155,.1);color:var(--green);font-weight:950;text-shadow:0 0 18px var(--green)}footer{text-align:center;color:var(--muted);padding:28px;border-top:1px solid rgba(255,255,255,.08);background:rgba(2,5,14,.46)}
     @keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 14px 30px rgba(57,255,155,.26)}50%{transform:scale(1.027);box-shadow:0 0 40px rgba(57,255,155,.42)}}.pulse{animation:pulse 1.35s infinite}
-    @media(max-width:900px){
-      .hero,.grid,.admin-layout{grid-template-columns:1fr}
-      .sidebar{position:static;width:100%}
-      .nav{align-items:flex-start}
-      .logo{font-size:19px}
-      .menu button{padding:10px 12px}
-      .stats{grid-template-columns:1fr 1fr 1fr}
-      h1{font-size:35px}
-      .hero-card,.card{border-radius:25px;padding:21px}
-      .wrap{padding-top:16px}
-    }
-
-    @media(max-width:560px){
-      html,body{width:100%;max-width:100%;overflow-x:hidden}
-      body:before{background-size:34px 34px}
-      header{position:sticky;top:0}
-      .nav{display:flex;flex-direction:column;align-items:stretch;padding:12px 10px;gap:12px;width:100%}
-      .logo{font-size:22px;justify-content:center;text-align:center;line-height:1.15;gap:8px}
-      .logo:before{width:42px;height:42px;border-radius:14px;flex:0 0 42px}
-      .menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}
-      .menu button{width:100%;min-height:50px;padding:10px 6px;border-radius:18px;font-size:14px;white-space:normal;text-align:center;line-height:1.1}
-      .wrap{width:100%;padding:14px 10px 60px}
-      .hero{padding:12px 0;gap:14px}
-      .hero-card,.card{border-radius:22px;padding:16px;width:100%;max-width:100%;box-shadow:0 12px 36px rgba(0,0,0,.35)}
-      .hero-card:before,.card:before{width:110px;height:110px;right:-45px;top:-45px}
-      .badge{font-size:12px;padding:8px 10px;line-height:1.25}
-      h1{font-size:28px;letter-spacing:-.6px;line-height:1.05}
-      .lead{font-size:15px;line-height:1.45}
-      .hero-actions{display:grid;grid-template-columns:1fr;gap:9px}
-      .hero-actions .btn{width:100%;text-align:center;min-height:48px}
-      .stats{grid-template-columns:1fr;gap:9px}
-      .stat{padding:13px;border-radius:18px}
-      .stat strong{font-size:25px}
-      .steps{gap:10px}
-      .step{padding:12px;border-radius:16px}
-      .step b{min-width:32px;height:32px;border-radius:11px}
-      .section-title{font-size:24px;margin:20px 0 12px;line-height:1.15}
-      .section-title:before{height:28px;width:7px}
-      .grid{grid-template-columns:1fr;gap:12px}
-      .sorteio{min-height:auto;gap:14px}
-      .sorteio h3{font-size:20px}
-      .price{font-size:25px}
-      button,.btn{min-height:46px;border-radius:16px;padding:11px 13px;font-size:15px}
-      input,select,textarea{font-size:16px;padding:13px 14px;border-radius:16px;min-height:48px}
-      textarea{min-height:95px}
-      .admin-layout{display:block}
-      .sidebar{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:14px;padding:12px;border-radius:22px;overflow:hidden}
-      .sidebar button{margin:0;min-height:50px;font-size:16px;border-radius:18px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      .sidebar .danger{margin-top:4px}
-      .admin-tab{margin-top:0}
-      .table-wrap{width:100%;overflow-x:auto;border-radius:16px;-webkit-overflow-scrolling:touch}
-      .table{min-width:560px}
-      .table th,.table td{padding:11px 10px;font-size:13px}
-      .modal{padding:8px;align-items:flex-start}
-      .modal-box{width:100%;max-height:calc(100vh - 16px);padding:15px;border-radius:22px}
-      .modal-head h2{font-size:20px}
-      .close{width:40px!important;height:40px!important;min-height:40px!important}
-      .dezenas-grid{grid-template-columns:repeat(5,1fr);gap:7px;max-height:230px;margin:10px 0;padding:2px}
-      .dezena-btn{min-height:42px!important;padding:8px 0!important;border-radius:14px!important;font-size:15px!important}
-      .notice{font-size:14px;padding:12px;border-radius:16px;line-height:1.4}
-      .mini-tag{font-size:11px;padding:7px 9px}
-      .form .btn.ok{position:sticky;bottom:0;width:100%;z-index:5;margin-top:4px}
-      footer{font-size:13px;padding:20px 12px}
-    }
-
-    @media(max-width:380px){
-      .logo{font-size:19px}
-      .menu button{font-size:12px;min-height:46px;padding:9px 4px}
-      h1{font-size:25px}
-      .section-title{font-size:22px}
-      .dezenas-grid{grid-template-columns:repeat(4,1fr)}
-      .sidebar button{font-size:14px}
-    }
+    @media(max-width:900px){.hero,.grid,.admin-layout{grid-template-columns:1fr}.sidebar{position:static;width:100%}.nav{align-items:flex-start}.logo{font-size:19px}.menu button{padding:10px 12px}.stats{grid-template-columns:1fr 1fr 1fr}h1{font-size:35px}.hero-card,.card{border-radius:25px;padding:21px}.wrap{padding-top:16px}}
+    @media(max-width:560px){html,body{width:100%;max-width:100%;overflow-x:hidden}body:before{background-size:34px 34px}header{position:sticky;top:0}.nav{display:flex;flex-direction:column;align-items:stretch;padding:12px 10px;gap:12px;width:100%}.logo{font-size:22px;justify-content:center;text-align:center;line-height:1.15;gap:8px}.logo:before{width:42px;height:42px;border-radius:14px;flex:0 0 42px}.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%}.menu button{width:100%;min-height:50px;padding:10px 6px;border-radius:18px;font-size:14px;white-space:normal;text-align:center;line-height:1.1}.wrap{width:100%;padding:14px 10px 60px}.hero{padding:12px 0;gap:14px}.hero-card,.card{border-radius:22px;padding:16px;width:100%;max-width:100%;box-shadow:0 12px 36px rgba(0,0,0,.35)}.hero-card:before,.card:before{width:110px;height:110px;right:-45px;top:-45px}.badge{font-size:12px;padding:8px 10px;line-height:1.25}h1{font-size:28px;letter-spacing:-.6px;line-height:1.05}.lead{font-size:15px;line-height:1.45}.hero-actions{display:grid;grid-template-columns:1fr;gap:9px}.hero-actions .btn{width:100%;text-align:center;min-height:48px}.stats{grid-template-columns:1fr;gap:9px}.stat{padding:13px;border-radius:18px}.stat strong{font-size:25px}.steps{gap:10px}.step{padding:12px;border-radius:16px}.step b{min-width:32px;height:32px;border-radius:11px}.section-title{font-size:24px;margin:20px 0 12px;line-height:1.15}.section-title:before{height:28px;width:7px}.grid{grid-template-columns:1fr;gap:12px}.sorteio{min-height:auto;gap:14px}.sorteio h3{font-size:20px}.price{font-size:25px}button,.btn{min-height:46px;border-radius:16px;padding:11px 13px;font-size:15px}input,select,textarea{font-size:16px;padding:13px 14px;border-radius:16px;min-height:48px}textarea{min-height:95px}.admin-layout{display:block}.sidebar{display:grid;grid-template-columns:1fr;gap:9px;margin-bottom:14px;padding:12px;border-radius:22px;overflow:hidden}.sidebar button{margin:0;min-height:50px;font-size:16px;border-radius:18px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sidebar .danger{margin-top:4px}.admin-tab{margin-top:0}.table-wrap{width:100%;overflow-x:auto;border-radius:16px;-webkit-overflow-scrolling:touch}.table{min-width:560px}.table th,.table td{padding:11px 10px;font-size:13px}.modal{padding:8px;align-items:flex-start}.modal-box{width:100%;max-height:calc(100vh - 16px);padding:15px;border-radius:22px}.modal-head h2{font-size:20px}.close{width:40px!important;height:40px!important;min-height:40px!important}.dezenas-grid{grid-template-columns:repeat(5,1fr);gap:7px;max-height:230px;margin:10px 0;padding:2px}.dezena-btn{min-height:42px!important;padding:8px 0!important;border-radius:14px!important;font-size:15px!important}.notice{font-size:14px;padding:12px;border-radius:16px;line-height:1.4}.mini-tag{font-size:11px;padding:7px 9px}.form .btn.ok{position:sticky;bottom:0;width:100%;z-index:5;margin-top:4px}footer{font-size:13px;padding:20px 12px}}
+    @media(max-width:380px){.logo{font-size:19px}.menu button{font-size:12px;min-height:46px;padding:9px 4px}h1{font-size:25px}.section-title{font-size:22px}.dezenas-grid{grid-template-columns:repeat(4,1fr)}.sidebar button{font-size:14px}}
   </style>
 </head>
 <body>
-<header>
-  <div class="nav">
-    <div class="logo"><span id="siteLogo">Sorteios da Kelly</span></div>
-    <div class="menu">
-      <button onclick="showPage('home')">🏠 Início</button>
-      <button class="secondary" onclick="showPage('ganhadores')">🏆 Ganhadores</button>
-      <button class="secondary" onclick="openLogin()">🔐 Admin</button>
-    </div>
-  </div>
-</header>
-
+<header><div class="nav"><div class="logo"><span id="siteLogo">Sorteios da Kelly</span></div><div class="menu"><button onclick="showPage('home')">🏠 Início</button><button class="secondary" onclick="showPage('ganhadores')">🏆 Ganhadores</button><button class="secondary" onclick="openLogin()">🔐 Admin</button></div></div></header>
 <main class="wrap">
-  <section id="homePage">
-    <div class="hero">
-      <div class="hero-card">
-        <h1>Participe de <span>todos os sorteios!</span></h1>
-        <p class="lead">Escolha seu sorteio, cadastre seus dados e acompanhe os ganhadores.</p>
-        <div class="hero-actions">
-          <button class="btn pulse" onclick="document.getElementById('sorteios').scrollIntoView({behavior:'smooth'})">🎟️ Participar Agora</button>
-          <button class="btn ghost" onclick="showPage('ganhadores')">👑 Ver Ganhadores</button>
-        </div>
-        <div class="stats">
-          <div class="stat"><strong id="countSorteios">0</strong>Sorteios</div>
-          <div class="stat"><strong id="countParticipantes">0</strong>Participantes</div>
-          <div class="stat"><strong id="countGanhadores">0</strong>Ganhadores</div>
-        </div>
-      </div>
-      <div class="hero-card">
-        <h2 style="color:var(--green);margin-bottom:10px">Como funciona?</h2>
-        <div class="steps">
-          <div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div>
-          <div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome, WhatsApp e cidade.</p></div></div>
-          <div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div>
-        </div>
-      </div>
-    </div>
-    <h2 class="section-title" id="sorteios">Sorteios Ativos</h2>
-    <div class="grid" id="sorteiosGrid"></div>
-  </section>
-
-  <section id="ganhadoresPage" class="hidden">
-    <h2 class="section-title">Ganhadores</h2>
-    <div class="grid" id="ganhadoresGrid"></div>
-  </section>
-
-  <section id="adminPage" class="hidden">
-    <div class="admin-layout">
-      <aside class="sidebar">
-        <button onclick="adminTab('dashboard')">📊 Dashboard</button>
-        <button onclick="adminTab('sorteios')">🎁 Sorteios</button>
-        <button onclick="adminTab('participantes')">👥 Participantes</button>
-        <button onclick="adminTab('premiados')">🏆 Premiados</button>
-        <button onclick="adminTab('aparencia')">🎨 Aparência</button>
-        <button class="danger" onclick="logoutAdmin()">🚪 Sair</button>
-      </aside>
-      <div>
-        <div id="tabDashboard" class="card admin-tab"></div>
-        <div id="tabSorteios" class="card admin-tab hidden"></div>
-        <div id="tabParticipantes" class="card admin-tab hidden"></div>
-        <div id="tabPremiados" class="card admin-tab hidden"></div>
-        <div id="tabAparencia" class="card admin-tab hidden"></div>
-      </div>
-    </div>
-  </section>
+  <section id="homePage"><div class="hero"><div class="hero-card"><h1>Participe de <span>todos os sorteios!</span></h1><p class="lead">Escolha seu sorteio, cadastre seus dados e acompanhe os ganhadores.</p><div class="hero-actions"><button class="btn pulse" onclick="document.getElementById('sorteios').scrollIntoView({behavior:'smooth'})">🎟️ Participar Agora</button><button class="btn ghost" onclick="showPage('ganhadores')">👑 Ver Ganhadores</button></div><div class="stats"><div class="stat"><strong id="countSorteios">0</strong>Sorteios</div><div class="stat"><strong id="countParticipantes">0</strong>Participantes</div><div class="stat"><strong id="countGanhadores">0</strong>Ganhadores</div></div></div><div class="hero-card"><h2 style="color:var(--green);margin-bottom:10px">Como funciona?</h2><div class="steps"><div class="step"><b>1</b><div><strong>Escolha o sorteio</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Veja os sorteios ativos e o prêmio disponível.</p></div></div><div class="step"><b>2</b><div><strong>Cadastre seus dados</strong><p class="lead" style="font-size:15px;margin:3px 0 0">Informe nome, WhatsApp e escolha a(s) dezena(s).</p></div></div><div class="step"><b>3</b><div><strong>Aguarde o resultado</strong><p class="lead" style="font-size:15px;margin:3px 0 0">O ganhador aparece na página pública.</p></div></div></div></div></div><h2 class="section-title" id="sorteios">Sorteios Ativos</h2><div class="grid" id="sorteiosGrid"></div></section>
+  <section id="ganhadoresPage" class="hidden"><h2 class="section-title">Ganhadores</h2><div class="grid" id="ganhadoresGrid"></div></section>
+  <section id="adminPage" class="hidden"><div class="admin-layout"><aside class="sidebar"><button onclick="adminTab('dashboard')">📊 Dashboard</button><button onclick="adminTab('sorteios')">🎁 Sorteios</button><button onclick="adminTab('participantes')">👥 Participantes</button><button onclick="adminTab('premiados')">🏆 Premiados</button><button onclick="adminTab('aparencia')">🎨 Aparência</button><button class="danger" onclick="logoutAdmin()">🚪 Sair</button></aside><div><div id="tabDashboard" class="card admin-tab"></div><div id="tabSorteios" class="card admin-tab hidden"></div><div id="tabParticipantes" class="card admin-tab hidden"></div><div id="tabPremiados" class="card admin-tab hidden"></div><div id="tabAparencia" class="card admin-tab hidden"></div></div></div></section>
 </main>
-
-<footer>
-  <strong id="footerName">Kelly Menezes</strong> © <span id="year"></span> — Sistema de Sorteios
-</footer>
-
-<div id="participarModal" class="modal hidden">
-  <div class="modal-box">
-    <div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button class="close" onclick="closeModal('participarModal')">×</button></div>
-    <div id="participarInfo"></div>
-    <div class="form">
-      <input id="pNome" placeholder="Seu nome completo" />
-      <input id="pWhats" inputmode="numeric" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999" />
-      
-      <button class="btn ok" onclick="salvarParticipacao()">✅ Confirmar Participação</button>
-    </div>
-  </div>
-</div>
-
-<div id="loginModal" class="modal hidden">
-  <div class="modal-box">
-    <div class="modal-head"><h2>🔐 Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div>
-    <div class="form">
-      <input id="adminSenha" type="password" placeholder="Senha do administrador" />
-      <button class="btn" onclick="loginAdmin()">🚀 Entrar no Painel</button>
-    </div>
-  </div>
-</div>
-
+<footer><strong id="footerName">Kelly Menezes</strong> © <span id="year"></span> — Sistema de Sorteios</footer>
+<div id="participarModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button class="close" onclick="closeModal('participarModal')">×</button></div><div id="participarInfo"></div><div class="form"><input id="pNome" placeholder="Seu nome completo" /><input id="pWhats" inputmode="numeric" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999" /><button class="btn ok" onclick="salvarParticipacao()">✅ Confirmar Participação</button></div></div></div>
+<div id="loginModal" class="modal hidden"><div class="modal-box"><div class="modal-head"><h2>🔐 Login Admin</h2><button class="close" onclick="closeModal('loginModal')">×</button></div><div class="form"><input id="adminSenha" type="password" placeholder="Senha do administrador" /><button class="btn" onclick="loginAdmin()">🚀 Entrar no Painel</button></div></div></div>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
-  import {
-    getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc,
-    onSnapshot, query, where, getDocs, serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
+  import { getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, onSnapshot, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 
-   const firebaseConfig = {
-  apiKey: "AIzaSyAP0ITU9ZuHkEpZ8T1SED8kKdTB8nvmbVA",
-  authDomain: "sorteio-kelly.firebaseapp.com",
-  projectId: "sorteio-kelly",
-  storageBucket: "sorteio-kelly.firebasestorage.app",
-  messagingSenderId: "792044241286",
-  appId: "1:792044241286:web:ff417bb6d36625b835ec07",
-};
-
+  const firebaseConfig = {apiKey:"AIzaSyAP0ITU9ZuHkEpZ8T1SED8kKdTB8nvmbVA",authDomain:"sorteio-kelly.firebaseapp.com",projectId:"sorteio-kelly",storageBucket:"sorteio-kelly.firebasestorage.app",messagingSenderId:"792044241286",appId:"1:792044241286:web:ff417bb6d36625b835ec07"};
   const app = initializeApp(firebaseConfig);
   const firestore = getFirestore(app);
-
   const ADMIN_PASSWORD = 'Marjorie06092025';
   let currentSorteioId = null;
-  let selectedDezena = null;
+  let selectedDezenas = [];
   let sorteios = [];
   let participantes = [];
   let ganhadores = [];
   let settings = {nome:'Sorteios da Kelly',rodape:'Kelly Menezes'};
 
-  window.showPage = showPage;
-  window.openParticipar = openParticipar;
-  window.selecionarDezena = selecionarDezena;
-  window.closeModal = closeModal;
-  window.salvarParticipacao = salvarParticipacao;
-  window.openLogin = openLogin;
-  window.loginAdmin = loginAdmin;
-  window.logoutAdmin = logoutAdmin;
-  window.adminTab = adminTab;
-  window.criarSorteio = criarSorteio;
-  window.toggleSorteio = toggleSorteio;
-  window.excluirSorteio = excluirSorteio;
-  window.sortearGanhador = sortearGanhador;
-  window.salvarAparencia = salvarAparencia;
-  window.limparTudo = limparTudo;
+  window.showPage=showPage;window.openParticipar=openParticipar;window.selecionarDezena=selecionarDezena;window.closeModal=closeModal;window.salvarParticipacao=salvarParticipacao;window.openLogin=openLogin;window.loginAdmin=loginAdmin;window.logoutAdmin=logoutAdmin;window.adminTab=adminTab;window.criarSorteio=criarSorteio;window.toggleSorteio=toggleSorteio;window.excluirSorteio=excluirSorteio;window.sortearGanhador=sortearGanhador;window.salvarAparencia=salvarAparencia;window.limparTudo=limparTudo;
 
   async function iniciarFirebase(){
-    onSnapshot(collection(firestore,'sorteios'), snap=>{
-      sorteios = snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderAll();
-    });
-    onSnapshot(collection(firestore,'participantes'), snap=>{
-      participantes = snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderAll();
-    });
-    onSnapshot(collection(firestore,'ganhadores'), snap=>{
-      ganhadores = snap.docs.map(d=>({id:d.id,...d.data()}));
-      renderAll();
-    });
-    onSnapshot(doc(firestore,'config','site'), snap=>{
-      if(snap.exists()) settings = {...settings,...snap.data()};
-      renderAll();
-    });
+    onSnapshot(collection(firestore,'sorteios'), snap=>{sorteios=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();});
+    onSnapshot(collection(firestore,'participantes'), snap=>{participantes=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();});
+    onSnapshot(collection(firestore,'ganhadores'), snap=>{ganhadores=snap.docs.map(d=>({id:d.id,...d.data()}));renderAll();});
+    onSnapshot(doc(firestore,'config','site'), snap=>{if(snap.exists()) settings={...settings,...snap.data()};renderAll();});
   }
-
-  function showPage(page){
-    homePage.classList.add('hidden');
-    ganhadoresPage.classList.add('hidden');
-    adminPage.classList.add('hidden');
-    if(page==='home') homePage.classList.remove('hidden');
-    if(page==='ganhadores') ganhadoresPage.classList.remove('hidden');
-    if(page==='admin') adminPage.classList.remove('hidden');
-    renderAll();
-  }
-
+  function showPage(page){homePage.classList.add('hidden');ganhadoresPage.classList.add('hidden');adminPage.classList.add('hidden');if(page==='home')homePage.classList.remove('hidden');if(page==='ganhadores')ganhadoresPage.classList.remove('hidden');if(page==='admin')adminPage.classList.remove('hidden');renderAll();}
   function todasDezenas(){return Array.from({length:100},(_,i)=>String(i).padStart(2,'0'))}
-  function dezenasOcupadas(sorteioId){return participantes.filter(p=>p.sorteioId===sorteioId).map(p=>p.dezena)}
-  function formatDate(d){
-    if(!d) return '-';
-    if(String(d).includes('-')){ const [y,m,day]=String(d).split('-'); return `${day}/${m}/${y}`; }
-    return d;
-  }
+  function getLimiteDezenas(s){return Number(s?.limiteDezenas || 1)}
+  function dezenasDoParticipante(p){return Array.isArray(p.dezenas)?p.dezenas:(p.dezena?[p.dezena]:[])}
+  function dezenasOcupadas(sorteioId){return participantes.filter(p=>p.sorteioId===sorteioId).flatMap(dezenasDoParticipante)}
+  function formatDate(d){if(!d)return'-';if(String(d).includes('-')){const[y,m,day]=String(d).split('-');return`${day}/${m}/${y}`;}return d;}
   function normalizarWhats(w){return String(w||'').replace(/[^0-9]/g,'')}
 
   function renderAll(){
-    siteLogo.innerHTML='<span>'+settings.nome+'</span>';
-    footerName.textContent=settings.rodape;
-    year.textContent=new Date().getFullYear();
-    const ativos=sorteios.filter(s=>s.status==='ativo');
-    countSorteios.textContent=sorteios.length;
-    countParticipantes.textContent=participantes.length;
-    countGanhadores.textContent=ganhadores.length;
-
-    sorteiosGrid.innerHTML=ativos.map(s=>{
-      const ocupadas=dezenasOcupadas(s.id).length;
-      const livres=100-ocupadas;
-      return `<div class="card sorteio"><div><span class="tag">ATIVO</span><h3>${s.titulo}</h3><p>${s.descricao||''}</p><div class="price">${s.premio}</div><p>Data: ${formatDate(s.data)}</p><div class="dezena-info"><span class="mini-tag">${livres} dezenas livres</span><span class="mini-tag">${ocupadas} escolhidas</span></div></div><button class="btn ok" onclick="openParticipar('${s.id}')">🎯 Quero Participar</button></div>`;
-    }).join('') || '<div class="card">Nenhum sorteio ativo no momento.</div>';
-
-    ganhadoresGrid.innerHTML=ganhadores.map(g=>`<div class="card"><span class="tag">GANHADOR</span><h3>${g.nome}</h3><p>Sorteio: ${g.sorteioTitulo}</p><div class="price">${g.premio}</div><p>Dezena sorteada: <strong>${g.dezena||'-'}</strong></p><p>WhatsApp: ${g.whats}</p><p>Data: ${formatDate(g.data)}</p></div>`).join('') || '<div class="card">Nenhum ganhador divulgado ainda.</div>';
+    siteLogo.innerHTML='<span>'+settings.nome+'</span>';footerName.textContent=settings.rodape;year.textContent=new Date().getFullYear();
+    const ativos=sorteios.filter(s=>s.status==='ativo');countSorteios.textContent=sorteios.length;countParticipantes.textContent=participantes.length;countGanhadores.textContent=ganhadores.length;
+    sorteiosGrid.innerHTML=ativos.map(s=>{const ocupadas=dezenasOcupadas(s.id).length;const livres=100-ocupadas;const limite=getLimiteDezenas(s);return `<div class="card sorteio"><div><span class="tag">ATIVO</span><h3>${s.titulo}</h3><p>${s.descricao||''}</p><div class="price">${s.premio}</div><p>Data: ${formatDate(s.data)}</p><div class="dezena-info"><span class="mini-tag">${livres} dezenas livres</span><span class="mini-tag">${ocupadas} escolhidas</span><span class="mini-tag">${limite} dezena${limite>1?'s':''} por pessoa</span></div></div><button class="btn ok" onclick="openParticipar('${s.id}')">🎯 Quero Participar</button></div>`;}).join('') || '<div class="card">Nenhum sorteio ativo no momento.</div>';
+    ganhadoresGrid.innerHTML=ganhadores.map(g=>`<div class="card"><span class="tag">GANHADOR</span><h3>${g.nome}</h3><p>Sorteio: ${g.sorteioTitulo}</p><div class="price">${g.premio}</div><p>Dezena(s) sorteada(s): <strong>${(g.dezenas||[g.dezena]).filter(Boolean).join(', ')||'-'}</strong></p><p>WhatsApp: ${g.whats}</p><p>Data: ${formatDate(g.data)}</p></div>`).join('') || '<div class="card">Nenhum ganhador divulgado ainda.</div>';
     renderAdmin();
   }
 
   function openParticipar(id){
-    currentSorteioId=id;
-    selectedDezena=null;
-    const s=sorteios.find(x=>x.id===id);
-    const ocupadas=dezenasOcupadas(id);
-    participarInfo.innerHTML=`<p class="lead"><strong>${s.titulo}</strong><br>${s.premio}</p><div class="notice">Escolha uma dezena disponível. Cada pessoa pode participar com apenas 1 dezena neste sorteio.</div><div class="dezenas-grid">${todasDezenas().map(d=>`<button class="dezena-btn ${ocupadas.includes(d)?'taken':''}" ${ocupadas.includes(d)?'disabled':''} onclick="selecionarDezena('${d}')">${d}</button>`).join('')}</div><div id="dezenaEscolhida" class="notice hidden"></div>`;
+    currentSorteioId=id;selectedDezenas=[];const s=sorteios.find(x=>x.id===id);const ocupadas=dezenasOcupadas(id);const limite=getLimiteDezenas(s);
+    participarInfo.innerHTML=`<p class="lead"><strong>${s.titulo}</strong><br>${s.premio}</p><div class="notice">Este sorteio permite escolher <strong>${limite} dezena${limite>1?'s':''}</strong>. Selecione ${limite===1?'1 dezena disponível':'até 2 dezenas disponíveis'}.</div><div class="dezenas-grid">${todasDezenas().map(d=>`<button class="dezena-btn ${ocupadas.includes(d)?'taken':''}" ${ocupadas.includes(d)?'disabled':''} onclick="selecionarDezena('${d}')">${d}</button>`).join('')}</div><div id="dezenaEscolhida" class="notice hidden"></div>`;
     participarModal.classList.remove('hidden');
   }
 
   function selecionarDezena(dezena){
-    selectedDezena=dezena;
+    const s=sorteios.find(x=>x.id===currentSorteioId);const limite=getLimiteDezenas(s);
+    if(selectedDezenas.includes(dezena)){selectedDezenas=selectedDezenas.filter(d=>d!==dezena);} else {if(selectedDezenas.length>=limite) return alert(`Este sorteio permite escolher apenas ${limite} dezena${limite>1?'s':''}.`);selectedDezenas.push(dezena);}
     document.querySelectorAll('.dezena-btn').forEach(btn=>btn.classList.remove('selected'));
-    [...document.querySelectorAll('.dezena-btn')].find(btn=>btn.textContent===dezena)?.classList.add('selected');
-    dezenaEscolhida.textContent='Dezena escolhida: '+dezena;
-    dezenaEscolhida.classList.remove('hidden');
+    selectedDezenas.forEach(d=>[...document.querySelectorAll('.dezena-btn')].find(btn=>btn.textContent===d)?.classList.add('selected'));
+    dezenaEscolhida.textContent='Dezena(s) escolhida(s): '+selectedDezenas.join(', ');dezenaEscolhida.classList.toggle('hidden',selectedDezenas.length===0);
   }
-
   function closeModal(id){document.getElementById(id).classList.add('hidden')}
 
   async function salvarParticipacao(){
-    const nome=pNome.value.trim(), whats=pWhats.value.trim();
-    const whatsLimpo = normalizarWhats(whats);
-    if(!nome||!whats) return alert('Preencha nome e WhatsApp.');
-    if(whatsLimpo.length < 10 || whatsLimpo.length > 11) return alert('Digite um WhatsApp válido usando apenas números, com DDD. Exemplo: 14999999999');
-    if(!selectedDezena) return alert('Escolha uma dezena para participar.');
-    const s=sorteios.find(x=>x.id===currentSorteioId);
-
-    const qWhats=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('whatsLimpo','==',whatsLimpo));
-    const snapWhats=await getDocs(qWhats);
-    if(!snapWhats.empty) return alert('Este WhatsApp já participou deste sorteio. É permitido apenas 1 dezena por pessoa.');
-
-    const qDezena=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('dezena','==',selectedDezena));
-    const snapDezena=await getDocs(qDezena);
-    if(!snapDezena.empty) return alert('Essa dezena já foi escolhida. Escolha outra dezena.');
-
-    await addDoc(collection(firestore,'participantes'),{
-      sorteioId:s.id,
-      sorteioTitulo:s.titulo,
-      nome,
-      whats,
-      whatsLimpo:whatsLimpo,
-      dezena:selectedDezena,
-      data:new Date().toISOString().slice(0,10),
-      criadoEm:serverTimestamp()
-    });
-    pNome.value='';
-    pWhats.value='';
-    selectedDezena=null;
-    closeModal('participarModal');
-    alert('Participação confirmada! Sua dezena foi reservada. Boa sorte.');
+    const nome=pNome.value.trim(), whats=pWhats.value.trim(), whatsLimpo=normalizarWhats(whats);
+    if(!nome||!whats)return alert('Preencha nome e WhatsApp.');
+    if(whatsLimpo.length<10||whatsLimpo.length>11)return alert('Digite um WhatsApp válido usando apenas números, com DDD. Exemplo: 14999999999');
+    const s=sorteios.find(x=>x.id===currentSorteioId);const limite=getLimiteDezenas(s);
+    if(selectedDezenas.length===0)return alert('Escolha pelo menos uma dezena para participar.');
+    if(selectedDezenas.length>limite)return alert(`Este sorteio permite no máximo ${limite} dezena${limite>1?'s':''}.`);
+    const qWhats=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('whatsLimpo','==',whatsLimpo));const snapWhats=await getDocs(qWhats);
+    if(!snapWhats.empty)return alert(`Este WhatsApp já participou deste sorteio. É permitido apenas ${limite} dezena${limite>1?'s':''} por pessoa.`);
+    for(const dez of selectedDezenas){const qDez=query(collection(firestore,'participantes'),where('sorteioId','==',s.id),where('dezenas','array-contains',dez));const snapDez=await getDocs(qDez);if(!snapDez.empty)return alert(`A dezena ${dez} já foi escolhida. Escolha outra dezena.`);}
+    await addDoc(collection(firestore,'participantes'),{sorteioId:s.id,sorteioTitulo:s.titulo,nome,whats,whatsLimpo,dezenas:selectedDezenas,dezena:selectedDezenas.join(', '),data:new Date().toISOString().slice(0,10),criadoEm:serverTimestamp()});
+    pNome.value='';pWhats.value='';selectedDezenas=[];closeModal('participarModal');alert('Participação confirmada! Sua(s) dezena(s) foram reservadas. Boa sorte.');
   }
 
-  function openLogin(){loginModal.classList.remove('hidden')}
-  function loginAdmin(){ if(adminSenha.value===ADMIN_PASSWORD){sessionStorage.setItem('adminLogado','sim');closeModal('loginModal');showPage('admin')} else alert('Senha incorreta.') }
-  function logoutAdmin(){sessionStorage.removeItem('adminLogado');showPage('home')}
-  function adminTab(tab){document.querySelectorAll('.admin-tab').forEach(e=>e.classList.add('hidden'));document.getElementById('tab'+tab[0].toUpperCase()+tab.slice(1)).classList.remove('hidden')}
-
+  function openLogin(){loginModal.classList.remove('hidden')}function loginAdmin(){if(adminSenha.value===ADMIN_PASSWORD){sessionStorage.setItem('adminLogado','sim');closeModal('loginModal');showPage('admin')}else alert('Senha incorreta.')}function logoutAdmin(){sessionStorage.removeItem('adminLogado');showPage('home')}function adminTab(tab){document.querySelectorAll('.admin-tab').forEach(e=>e.classList.add('hidden'));document.getElementById('tab'+tab[0].toUpperCase()+tab.slice(1)).classList.remove('hidden')}
   function renderAdmin(){
-    if(sessionStorage.getItem('adminLogado')!=='sim') return;
+    if(sessionStorage.getItem('adminLogado')!=='sim')return;
     tabDashboard.innerHTML=`<h2 class="section-title">Painel Admin</h2><div class="stats"><div class="stat"><strong>${sorteios.length}</strong>Sorteios</div><div class="stat"><strong>${participantes.length}</strong>Participantes</div><div class="stat"><strong>${ganhadores.length}</strong>Premiados</div></div><div class="notice">Firebase ativo: as dezenas e participantes atualizam em tempo real entre celulares diferentes.</div>`;
-    tabSorteios.innerHTML=`<h2 class="section-title">Gerenciar Sorteios</h2><div class="form"><input id="sTitulo" placeholder="Título do sorteio"><textarea id="sDesc" placeholder="Descrição"></textarea><input id="sPremio" placeholder="Prêmio"><input id="sData" type="date"><button class="btn ok" onclick="criarSorteio()">➕ Criar Sorteio</button></div><br>${tableSorteios()}`;
+    tabSorteios.innerHTML=`<h2 class="section-title">Gerenciar Sorteios</h2><div class="form"><input id="sTitulo" placeholder="Título do sorteio"><textarea id="sDesc" placeholder="Descrição"></textarea><input id="sPremio" placeholder="Prêmio"><input id="sData" type="date"><label>Quantidade de dezenas por cliente</label><select id="sLimiteDezenas"><option value="1">1 dezena por cliente</option><option value="2">2 dezenas por cliente</option></select><button class="btn ok" onclick="criarSorteio()">➕ Criar Sorteio</button></div><br>${tableSorteios()}`;
     tabParticipantes.innerHTML=`<h2 class="section-title">Participantes</h2>${tableParticipantes()}`;
-    tabPremiados.innerHTML=`<h2 class="section-title">Selecionar Ganhador</h2><div class="form"><div class="notice">Escolha manualmente o participante que acertou a dezena para marcar como ganhador.</div><select id="ganhadorManual"><option value="">Selecione o ganhador pela dezena</option>${participantes.map(p=>`<option value="${p.id}">${p.dezena} - ${p.nome} | ${p.sorteioTitulo}</option>`).join('')}</select><button class="btn ok pulse" onclick="sortearGanhador()">🏆 Confirmar Ganhador</button></div><br>${tableGanhadores()}`;
+    tabPremiados.innerHTML=`<h2 class="section-title">Selecionar Ganhador</h2><div class="form"><div class="notice">Escolha manualmente o participante que acertou a dezena para marcar como ganhador.</div><select id="ganhadorManual"><option value="">Selecione o ganhador pela dezena</option>${participantes.map(p=>`<option value="${p.id}">${dezenasDoParticipante(p).join(', ')} - ${p.nome} | ${p.sorteioTitulo}</option>`).join('')}</select><button class="btn ok pulse" onclick="sortearGanhador()">🏆 Confirmar Ganhador</button></div><br>${tableGanhadores()}`;
     tabAparencia.innerHTML=`<h2 class="section-title">Aparência</h2><div class="form"><label>Nome do site</label><input id="setNome" value="${settings.nome}"><label>Rodapé/assinatura</label><input id="setRodape" value="${settings.rodape}"><button class="btn ok" onclick="salvarAparencia()">Salvar Aparência</button><button class="btn danger" onclick="limparTudo()">Limpar todos os dados</button></div>`;
   }
+  function tableSorteios(){return `<div class="table-wrap"><table class="table"><tr><th>Título</th><th>Prêmio</th><th>Dezenas</th><th>Limite</th><th>Status</th><th>Ação</th></tr>${sorteios.map(s=>{const qtd=dezenasOcupadas(s.id).length;return `<tr><td>${s.titulo}</td><td>${s.premio}</td><td>${qtd}/100</td><td>${getLimiteDezenas(s)}</td><td>${s.status}</td><td><button class="btn secondary" onclick="toggleSorteio('${s.id}')">Ativar/Pausar</button> <button class="btn danger" onclick="excluirSorteio('${s.id}')">Excluir</button></td></tr>`}).join('')}</table></div>`}
+  function tableParticipantes(){return `<div class="table-wrap"><table class="table"><tr><th>Dezena(s)</th><th>Nome</th><th>WhatsApp</th><th>Sorteio</th></tr>${participantes.map(p=>`<tr><td><strong>${dezenasDoParticipante(p).join(', ')||'-'}</strong></td><td>${p.nome}</td><td>${p.whats}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table></div>`}
+  function tableGanhadores(){return `<div class="table-wrap"><table class="table"><tr><th>Dezena(s)</th><th>Nome</th><th>Sorteio</th><th>Prêmio</th><th>Data</th></tr>${ganhadores.map(g=>`<tr><td><strong>${(g.dezenas||[g.dezena]).filter(Boolean).join(', ')||'-'}</strong></td><td>${g.nome}</td><td>${g.sorteioTitulo}</td><td>${g.premio}</td><td>${formatDate(g.data)}</td></tr>`).join('')}</table></div>`}
 
-  function tableSorteios(){return `<div class="table-wrap"><table class="table"><tr><th>Título</th><th>Prêmio</th><th>Dezenas</th><th>Status</th><th>Ação</th></tr>${sorteios.map(s=>{const qtd=dezenasOcupadas(s.id).length;return `<tr><td>${s.titulo}</td><td>${s.premio}</td><td>${qtd}/100</td><td>${s.status}</td><td><button class="btn secondary" onclick="toggleSorteio('${s.id}')">Ativar/Pausar</button> <button class="btn danger" onclick="excluirSorteio('${s.id}')">Excluir</button></td></tr>`}).join('')}</table></div>`}
-  function tableParticipantes(){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>WhatsApp</th><th>Sorteio</th></tr>${participantes.map(p=>`<tr><td><strong>${p.dezena||'-'}</strong></td><td>${p.nome}</td><td>${p.whats}</td><td>${p.sorteioTitulo}</td></tr>`).join('')}</table></div>`}
-  function tableGanhadores(){return `<div class="table-wrap"><table class="table"><tr><th>Dezena</th><th>Nome</th><th>Sorteio</th><th>Prêmio</th><th>Data</th></tr>${ganhadores.map(g=>`<tr><td><strong>${g.dezena||'-'}</strong></td><td>${g.nome}</td><td>${g.sorteioTitulo}</td><td>${g.premio}</td><td>${formatDate(g.data)}</td></tr>`).join('')}</table></div>`}
-
-  async function criarSorteio(){
-    if(!sTitulo.value||!sPremio.value) return alert('Preencha título e prêmio.');
-    await addDoc(collection(firestore,'sorteios'),{
-      titulo:sTitulo.value,
-      descricao:sDesc.value||'Escolha uma dezena disponível para participar.',
-      premio:sPremio.value,
-      status:'ativo',
-      data:sData.value||new Date().toISOString().slice(0,10),
-      criadoEm:serverTimestamp()
-    });
-  }
-
-  async function toggleSorteio(id){
-    const s=sorteios.find(x=>x.id===id);
-    await updateDoc(doc(firestore,'sorteios',id),{status:s.status==='ativo'?'pausado':'ativo'});
-  }
-
-  async function excluirSorteio(id){
-    if(!confirm('Excluir este sorteio? Isso também vai apagar os participantes e ganhadores desse sorteio.')) return;
-    await deleteDoc(doc(firestore,'sorteios',id));
-    const partSnap=await getDocs(query(collection(firestore,'participantes'),where('sorteioId','==',id)));
-    for(const item of partSnap.docs){ await deleteDoc(doc(firestore,'participantes',item.id)); }
-    const ganhSnap=await getDocs(query(collection(firestore,'ganhadores'),where('sorteioId','==',id)));
-    for(const item of ganhSnap.docs){ await deleteDoc(doc(firestore,'ganhadores',item.id)); }
-  }
-
-  async function sortearGanhador(){
-    const participanteId=ganhadorManual.value;
-    if(!participanteId) return alert('Selecione um participante para marcar como ganhador.');
-    const p=participantes.find(x=>x.id===participanteId);
-    if(!p) return alert('Participante não encontrado. Atualize a página e tente novamente.');
-    const s=sorteios.find(x=>x.id===p.sorteioId);
-    const jaPremiado=ganhadores.some(g=>g.participanteId===p.id || (g.sorteioId===p.sorteioId && g.dezena===p.dezena));
-    if(jaPremiado) return alert('Esse participante/dezena já está marcado como ganhador.');
-    await addDoc(collection(firestore,'ganhadores'),{
-      participanteId:p.id,
-      nome:p.nome,
-      whats:p.whats,
-      dezena:p.dezena,
-      sorteioId:p.sorteioId,
-      sorteioTitulo:p.sorteioTitulo,
-      premio:s?.premio||'Prêmio',
-      data:new Date().toISOString().slice(0,10),
-      criadoEm:serverTimestamp()
-    });
-    alert('Ganhador confirmado: '+p.nome+' | Dezena: '+p.dezena);
-  }
-
-  async function salvarAparencia(){
-    await setDoc(doc(firestore,'config','site'),{nome:setNome.value,rodape:setRodape.value},{merge:true});
-  }
-
-  async function limparTudo(){
-    if(!confirm('Tem certeza? Isso apaga sorteios, participantes e ganhadores.')) return;
-    for(const s of sorteios){ await deleteDoc(doc(firestore,'sorteios',s.id)); }
-    for(const p of participantes){ await deleteDoc(doc(firestore,'participantes',p.id)); }
-    for(const g of ganhadores){ await deleteDoc(doc(firestore,'ganhadores',g.id)); }
-  }
-
+  async function criarSorteio(){if(!sTitulo.value||!sPremio.value)return alert('Preencha título e prêmio.');await addDoc(collection(firestore,'sorteios'),{titulo:sTitulo.value,descricao:sDesc.value||'Escolha a(s) dezena(s) disponível(is) para participar.',premio:sPremio.value,status:'ativo',data:sData.value||new Date().toISOString().slice(0,10),limiteDezenas:Number(sLimiteDezenas.value||1),criadoEm:serverTimestamp()});}
+  async function toggleSorteio(id){const s=sorteios.find(x=>x.id===id);await updateDoc(doc(firestore,'sorteios',id),{status:s.status==='ativo'?'pausado':'ativo'});}
+  async function excluirSorteio(id){if(!confirm('Excluir este sorteio? Isso também vai apagar os participantes e ganhadores desse sorteio.'))return;await deleteDoc(doc(firestore,'sorteios',id));const partSnap=await getDocs(query(collection(firestore,'participantes'),where('sorteioId','==',id)));for(const item of partSnap.docs){await deleteDoc(doc(firestore,'participantes',item.id));}const ganhSnap=await getDocs(query(collection(firestore,'ganhadores'),where('sorteioId','==',id)));for(const item of ganhSnap.docs){await deleteDoc(doc(firestore,'ganhadores',item.id));}}
+  async function sortearGanhador(){const participanteId=ganhadorManual.value;if(!participanteId)return alert('Selecione um participante para marcar como ganhador.');const p=participantes.find(x=>x.id===participanteId);if(!p)return alert('Participante não encontrado. Atualize a página e tente novamente.');const s=sorteios.find(x=>x.id===p.sorteioId);const dezenas=dezenasDoParticipante(p);const jaPremiado=ganhadores.some(g=>g.participanteId===p.id);if(jaPremiado)return alert('Esse participante já está marcado como ganhador.');await addDoc(collection(firestore,'ganhadores'),{participanteId:p.id,nome:p.nome,whats:p.whats,dezenas,dezena:dezenas.join(', '),sorteioId:p.sorteioId,sorteioTitulo:p.sorteioTitulo,premio:s?.premio||'Prêmio',data:new Date().toISOString().slice(0,10),criadoEm:serverTimestamp()});alert('Ganhador confirmado: '+p.nome+' | Dezena(s): '+dezenas.join(', '));}
+  async function salvarAparencia(){await setDoc(doc(firestore,'config','site'),{nome:setNome.value,rodape:setRodape.value},{merge:true});}
+  async function limparTudo(){if(!confirm('Tem certeza? Isso apaga sorteios, participantes e ganhadores.'))return;for(const s of sorteios){await deleteDoc(doc(firestore,'sorteios',s.id));}for(const p of participantes){await deleteDoc(doc(firestore,'participantes',p.id));}for(const g of ganhadores){await deleteDoc(doc(firestore,'ganhadores',g.id));}}
   iniciarFirebase();
 </script>
 </body>
