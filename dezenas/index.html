@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <link rel="icon" href="https://ugc.production.linktr.ee/21c8eac6-37f8-4d6e-b584-75554d3a60ef_image.png">
+  <title>Sorteio de Dezenas - Kelly Menezes JB</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+<body>
+<header>
+  <div class="nav">
+    <div class="logo"><span id="siteLogo">Kelly Menezes JB</span></div>
+    <div class="menu">
+      <button type="button" id="btnInicio">Início</button>
+      <button type="button" id="btnGanhadores" class="secondary">Ganhadores</button>
+      <a class="btn secondary" href="../unidades/">Unidades</a>
+      <a class="btn secondary" href="../dezenas/">Dezenas</a>
+      <a class="btn secondary" href="../centenas/">Centenas</a>
+      <a class="btn secondary" href="../grupos/">Grupos</a>
+      <button type="button" id="btnAdmin" class="secondary">Admin</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="homePage">
+    <div class="hero">
+      <div class="aviso">⚠️ IMPORTANTE: Obrigatório o cadastro na banca para receber o seu prêmio.</div>
+      <div class="cadastro-top">
+        <button type="button" class="btn cadastro-btn-top" id="btnCadastro">👥 Ainda não tem cadastro? Cadastre-se na banca</button>
+      </div>
+      <span class="badge">🏆 Dezenas</span>
+      <h1>Dezenas da Sorte</h1>
+      <p class="lead">Escolha seu sorteio, cadastre seu nome e WhatsApp, selecione uma dezena disponível e acompanhe os ganhadores.</p>
+      <div class="hero-actions">
+        <button type="button" class="btn ok" id="btnParticiparAgora">🎟️ Participar Agora</button>
+        <button type="button" class="btn ghost" id="btnVerGanhadores">👑 Ver Ganhadores</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="countSorteios">0</strong>Sorteios</div>
+        <div class="stat"><strong id="countParticipantes">0</strong>Participantes</div>
+        <div class="stat"><strong id="countGanhadores">0</strong>Ganhadores</div>
+      </div>
+    </div>
+    <h2 class="section-title" id="sorteios">Sorteios</h2>
+    <div class="grid" id="sorteiosGrid"></div>
+  </section>
+
+  <section id="ganhadoresPage" class="hidden">
+    <h2 class="section-title">Ganhadores</h2>
+    <div class="grid" id="ganhadoresGrid"></div>
+  </section>
+
+  <section id="adminPage" class="hidden">
+    <div class="admin-layout">
+      <aside class="sidebar">
+        <button type="button" data-admin-tab="dashboard">📊 Dashboard</button>
+        <button type="button" data-admin-tab="sorteios">🎁 Sorteios</button>
+        <button type="button" data-admin-tab="participantes">👥 Participantes</button>
+        <button type="button" data-admin-tab="premiados">🏆 Premiados</button>
+        <button type="button" data-admin-tab="aparencia">🎨 Aparência</button>
+        <button type="button" class="danger" id="btnSairAdmin">🚪 Sair</button>
+      </aside>
+      <div>
+        <div id="tabDashboard" class="card admin-tab"></div>
+        <div id="tabSorteios" class="card admin-tab hidden"></div>
+        <div id="tabParticipantes" class="card admin-tab hidden"></div>
+        <div id="tabPremiados" class="card admin-tab hidden"></div>
+        <div id="tabAparencia" class="card admin-tab hidden"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <strong id="footerName">Kelly Menezes JB</strong> © <span id="year"></span> — Sistema de Sorteios
+</footer>
+
+<div id="participarModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button type="button" class="close" data-close-modal="participarModal">×</button></div>
+    <div id="participarInfo"></div>
+    <div class="form">
+      <input id="pNome" placeholder="Seu nome completo">
+      <input id="pWhats" inputmode="numeric" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999">
+      <button type="button" class="btn ok" id="btnConfirmarParticipacao">✅ Confirmar Participação</button>
+    </div>
+  </div>
+</div>
+
+<div id="loginModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-head"><h2>🔐 Login Admin</h2><button type="button" class="close" data-close-modal="loginModal">×</button></div>
+    <div class="notice">Entre com o e-mail e senha criados no Firebase Authentication.</div>
+    <div class="form">
+      <input id="adminEmail" type="email" inputmode="email" autocomplete="username" placeholder="E-mail do administrador" value=" . ">
+      <input id="adminSenha" type="password" autocomplete="current-password" placeholder="Senha do administrador">
+      <button type="button" class="btn" id="btnEntrarAdmin">🚀 Entrar no Painel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  window.SORTEIO_CONFIG = {
+    tipo: "dezenas",
+    label: "Dezenas",
+    itemName: "dezena",
+    total: 100,
+    digits: 2,
+    start: 0
+  };
+</script>
+<script type="module" src="../assets/app.js"></script>
+</body>
+</html>
