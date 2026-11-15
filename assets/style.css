@@ -138,3 +138,89 @@ body:after{display:none}
 .table a{color:var(--red3);text-decoration:underline}
 @media(max-width:768px){body:before{animation:none}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* ===== Visual v2 ===== */
+:root{--r:18px;--glass:rgba(8,26,50,.72);--bd:rgba(125,244,255,.16);--grad:linear-gradient(135deg,#00e5ff,#2f7bff 60%,#7a5cff)}
+*{font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+body{background:radial-gradient(1100px 600px at 50% -10%,rgba(0,150,255,.28),transparent 60%),radial-gradient(700px 500px at 100% 40%,rgba(122,92,255,.14),transparent 60%),linear-gradient(180deg,#020714,#041a33 60%,#020713);background-attachment:fixed}
+body:before{opacity:.35}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-thumb{background:rgba(125,244,255,.28);border-radius:10px}::-webkit-scrollbar-track{background:transparent}
+
+/* Cabeçalho */
+header{background:rgba(2,8,20,.72);border-bottom:1px solid var(--bd)}
+.logo{letter-spacing:1.2px;font-size:17px;filter:none;text-shadow:none;color:#fff}
+.logo:before{animation:none;border-color:rgba(125,244,255,.4);box-shadow:0 0 0 3px rgba(0,229,255,.12)}
+.menu button,.menu .btn{padding:9px 16px;font-size:14px;font-weight:700;box-shadow:none;border-color:var(--bd)}
+.menu button:hover,.menu .btn:hover{border-color:var(--neon);box-shadow:0 0 18px rgba(0,229,255,.25)}
+
+/* Botões */
+button,.btn{font-weight:700;letter-spacing:.2px;border:1px solid rgba(255,255,255,.14);box-shadow:0 8px 22px rgba(0,110,255,.25)}
+.ok,.btn:not(.secondary):not(.ghost):not(.danger){background:var(--grad)!important}
+.secondary,.ghost{background:rgba(255,255,255,.05)!important;border-color:var(--bd)}
+button:active,.btn:active{transform:scale(.97)}
+
+/* Hero */
+.hero{position:relative;padding:18px 0 30px}
+.hero:before{content:"";position:absolute;left:50%;top:30%;width:620px;max-width:100%;height:320px;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,229,255,.22),transparent);filter:blur(30px);z-index:-1;pointer-events:none}
+h1{font-size:clamp(34px,6vw,60px);font-weight:900;letter-spacing:-1.5px;filter:none;background:linear-gradient(90deg,#fff 10%,#7df4ff 50%,#a99cff 90%);-webkit-background-clip:text;background-clip:text;animation:none}
+.lead{font-size:17px;max-width:620px}
+.badge{background:rgba(0,229,255,.1);border-color:rgba(0,229,255,.35);color:#bff8ff;filter:none}
+.aviso{max-width:640px;border:1px solid rgba(255,196,0,.55);border-left:5px solid #ffc400;background:rgba(255,196,0,.08);font-weight:700;animation:none;text-shadow:none;border-radius:14px}
+.cadastro-btn-top{animation:none;background:linear-gradient(135deg,#25d366,#128c7e)!important;border-color:rgba(255,255,255,.2)}
+.cadastro-top{margin-bottom:30px}
+.section-title{filter:none;background:none;border:0;font-size:22px;letter-spacing:1px;position:relative;padding-bottom:12px}
+.section-title:after{content:"";position:absolute;left:25%;right:25%;bottom:0;height:3px;border-radius:3px;background:var(--grad)}
+
+/* Estatísticas */
+.stat{background:var(--glass);border:1px solid var(--bd);border-radius:var(--r);font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);backdrop-filter:blur(8px)}
+.stat strong{font-size:40px;font-weight:900;letter-spacing:0;text-transform:none;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;animation:none}
+
+/* Cards de sorteio */
+.card,.sorteio{background:var(--glass);border:1px solid var(--bd);border-radius:var(--r);backdrop-filter:blur(10px);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s}
+.sorteio:before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--grad)}
+.sorteio:hover{transform:translateY(-6px);border-color:rgba(0,229,255,.55);box-shadow:0 24px 50px rgba(0,0,0,.45),0 0 34px rgba(0,229,255,.2)}
+.sorteio h3{font-size:21px;letter-spacing:.3px}
+.price{font-size:38px;font-weight:900;letter-spacing:-1px;background:linear-gradient(90deg,#fff,#7df4ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{background:rgba(0,255,150,.12);border-color:rgba(0,255,150,.4);color:#7dffc4}
+.tag.paused-tag{background:rgba(255,196,0,.12)!important;border-color:rgba(255,196,0,.4);color:#ffd866}
+.paused-card:before{background:linear-gradient(90deg,#ffc400,#ff8a00)}
+.limit-chip,.mini-tag{background:rgba(255,255,255,.06);border-color:var(--bd);font-weight:700;color:#d6f6ff}
+.sorteio .btn,.sorteio button{width:100%;margin-top:14px;padding:14px}
+
+/* Pop-ups */
+.modal{background:rgba(1,5,14,.78);backdrop-filter:blur(6px)}
+.modal-box{background:linear-gradient(180deg,#061d3a,#030c1c);border:1px solid var(--bd);border-radius:24px}
+.modal-head h2{font-size:22px}
+.notice{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.25);border-left:4px solid var(--neon);border-radius:12px}
+input,select,textarea{background:rgba(255,255,255,.04);border:1px solid var(--bd);border-radius:12px;transition:border-color .2s,box-shadow .2s}
+input::placeholder,textarea::placeholder{color:rgba(168,223,240,.5)}
+
+/* Grade de números */
+.numeros-grid{gap:10px;max-height:46vh;padding:6px}
+.numero-btn{min-height:64px!important;padding:6px!important;border-radius:14px!important;background:rgba(255,255,255,.05)!important;border:1px solid var(--bd)!important;font-size:22px!important;font-weight:800!important;box-shadow:none!important;letter-spacing:.5px}
+.numero-btn:after{margin-top:4px;font-size:9px;letter-spacing:1px;font-weight:700;color:#7dffc4}
+.numero-btn:hover:not(.taken){background:rgba(0,229,255,.14)!important;border-color:var(--neon)!important;transform:translateY(-3px)}
+.numero-btn.selected{background:var(--grad)!important;border-color:#fff!important;transform:scale(1.05);animation:none!important;box-shadow:0 0 0 3px rgba(0,229,255,.3),0 10px 24px rgba(0,110,255,.5)!important}
+.numero-btn.selected:after{content:"✔ SEU";color:#fff}
+.numero-btn.taken{background:rgba(255,255,255,.02)!important;opacity:.4;text-decoration:line-through;text-decoration-thickness:2px}
+.numero-btn.taken:after{content:"OCUPADO";color:#ff8a8a;text-decoration:none}
+.choice-counter{display:inline-block;padding:6px 14px;border-radius:999px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.3);font-size:13px}
+
+/* Admin e tabelas */
+.sidebar{background:var(--glass);border-color:var(--bd);backdrop-filter:blur(10px)}
+.sidebar button{background:transparent!important;border-color:transparent;box-shadow:none;font-weight:600}
+.sidebar button:hover{background:rgba(0,229,255,.1)!important;border-color:var(--bd)}
+.table-wrap{border-color:var(--bd);border-radius:14px}
+.table th{background:rgba(0,229,255,.1);color:#bff8ff;letter-spacing:.8px}
+.table tr:nth-child(even) td{background:rgba(255,255,255,.025)}
+.table tr:hover td{background:rgba(0,229,255,.07)}
+footer{background:transparent;border-top:1px solid var(--bd);font-size:14px}
+
+@media(max-width:768px){
+  .numeros-grid{grid-template-columns:repeat(5,1fr);gap:7px;max-height:50dvh}
+  .numero-btn{min-height:54px!important;font-size:17px!important}
+  .stat strong{font-size:26px}.stat{font-size:10px;letter-spacing:.5px}
+  .price{font-size:30px}.lead{font-size:14px}
+  .section-title{font-size:18px}
+  .sorteio .btn,.sorteio button{padding:12px}
+}
