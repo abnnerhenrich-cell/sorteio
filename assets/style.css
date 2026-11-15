@@ -11,7 +11,7 @@ body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;back
 header,.wrap,footer,.modal{position:relative;z-index:1}
 header{position:sticky;top:0;z-index:50;background:rgba(2,7,19,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,217,255,.24)}
 .nav{max-width:1220px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.logo{display:flex;align-items:center;gap:10px;color:var(--red);font-weight:1000;text-transform:uppercase;letter-spacing:2px;font-size:19px;text-shadow:0 0 18px rgba(0,217,255,.38)}
-.logo:before{content:"";display:block;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:url("https://ugc.production.linktr.ee/21c8eac6-37f8-4d6e-b584-75554d3a60ef_image.png") center/cover no-repeat,#061427;animation:crown 2s ease-in-out infinite}.menu{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.logo:before{content:"";display:block;width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:url("https://i.imgur.com/5RUTmYL.jpeg") center/cover no-repeat,#061427;animation:crown 2s ease-in-out infinite}.menu{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end}
 button,.btn{border:1px solid rgba(0,217,255,.62);border-radius:999px;padding:12px 18px;background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;font-weight:1000;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:.22s ease;position:relative;z-index:10;pointer-events:auto;box-shadow:0 10px 24px rgba(0,217,255,.22)}button:hover,.btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 14px 28px rgba(0,217,255,.34)}button:disabled,.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important;filter:grayscale(.15)}.secondary,.ghost{background:rgba(4,17,35,.85)!important;color:#fff!important}.ok{background:linear-gradient(135deg,#00e5ff,#006dff)!important;color:#fff!important}.danger{background:linear-gradient(135deg,#ef4444,#7f1d1d)!important;color:#fff!important;border-color:rgba(239,68,68,.55)!important}
 .wrap{max-width:1220px;margin:auto;padding:34px 18px 80px}.hero{text-align:center;padding:10px 0 26px}.aviso{max-width:590px;margin:0 auto 10px;padding:18px 22px;border-radius:14px;background:#061427;border:3px solid var(--red);color:#fff;font-size:16px;font-weight:1000;text-align:left;line-height:1.45;box-shadow:0 18px 38px rgba(0,0,0,.35);animation:aviso 2.3s ease-in-out infinite alternate}.cadastro-top{display:flex;justify-content:center;margin:0 auto 26px}.cadastro-btn-top{width:min(590px,100%);min-height:50px;font-size:16px!important;animation:softBounce 2.2s ease-in-out infinite}.badge,.section-title{display:inline-flex;align-items:center;gap:8px;padding:8px 15px;border-radius:999px;border:1px solid var(--line);background:rgba(4,17,35,.78);color:#fff;font-size:12px;font-weight:1000;text-transform:uppercase;letter-spacing:.8px}.section-title{width:max-content;margin:28px auto 20px;display:flex}
 h1{margin:18px 0 10px;font-size:50px;line-height:1.02;text-transform:uppercase;letter-spacing:-1.2px;background:linear-gradient(90deg,#fff,#7df4ff,#00d9ff,#fff);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:title 4s ease-in-out infinite}.lead{max-width:640px;margin:0 auto 18px;color:var(--muted);font-size:16px;line-height:1.55}.hero-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 0}.stat{background:rgba(5,19,38,.93);border:1px solid rgba(0,217,255,.30);border-radius:16px;padding:22px 18px;text-align:center;overflow:hidden;animation:cardIn .6s ease both}.stat strong{display:block;font-size:34px;color:var(--red);animation:number 2.5s ease-in-out infinite}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card,.sorteio{background:rgba(5,19,38,.94);border:1px solid rgba(0,217,255,.34);border-radius:18px;padding:22px;box-shadow:0 18px 40px rgba(0,0,0,.35);animation:cardIn .5s ease both}.sorteio{min-height:230px;display:flex;flex-direction:column;justify-content:space-between}.sorteio:hover,.card:hover{transform:translateY(-4px);border-color:var(--red)}.paused-card{opacity:.92;border-style:dashed!important}.tag{display:inline-flex;width:max-content;padding:7px 12px;margin-bottom:12px;border-radius:999px;background:rgba(0,217,255,.14);border:1px solid rgba(0,217,255,.38);color:#fff;font-size:11px;font-weight:1000;letter-spacing:.6px}.paused-tag{background:rgba(255,255,255,.08)!important}.sorteio h3{font-size:24px;text-transform:uppercase;margin-bottom:8px}.sorteio p{color:var(--muted);line-height:1.45;margin-bottom:9px}.price{font-size:34px;font-weight:1000;color:var(--red3);margin:10px 0}.limit-chip{display:inline-flex;margin:6px 0 10px;padding:7px 12px;border-radius:999px;background:rgba(0,217,255,.14);border:1px solid rgba(0,217,255,.32);color:#fff;font-weight:900;font-size:12px}.numero-info{display:flex;gap:8px;flex-wrap:wrap}.mini-tag{font-size:12px;padding:8px 13px;border-radius:999px;background:rgba(0,217,255,.14);border:1px solid rgba(0,217,255,.32);color:#fff;font-weight:900}
@@ -111,7 +111,7 @@ h1{margin:18px 0 10px;font-size:50px;line-height:1.02;text-transform:uppercase;l
 
 /* Tema Kelly Menezes JB — azul neon animado (somente estética) */
 .logo span{position:relative}
-.logo span:after{content:"Kelly Menezes JB";display:block;font-size:10px;letter-spacing:1.4px;color:#bff8ff;text-shadow:0 0 12px rgba(0,229,255,.85);margin-top:1px;line-height:1}
+.logo span:after{content:"";display:block;font-size:10px;letter-spacing:1.4px;color:#bff8ff;text-shadow:0 0 12px rgba(0,229,255,.85);margin-top:1px;line-height:1}
 .logo, h1, .section-title, .badge{filter:drop-shadow(0 0 10px rgba(0,229,255,.28))}
 button,.btn{box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 0 18px rgba(0,217,255,.28),0 10px 24px rgba(0,110,255,.18)}
 button:hover,.btn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 0 26px rgba(0,229,255,.48),0 14px 30px rgba(0,110,255,.28)}
@@ -123,3 +123,18 @@ button:hover,.btn:hover{box-shadow:0 0 0 1px rgba(255,255,255,.12) inset,0 0 26p
 body:after{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:0;background:linear-gradient(115deg,transparent 0 38%,rgba(0,229,255,.08) 45%,transparent 52% 100%);animation:scanNeon 7s linear infinite;opacity:.7}
 @keyframes pulseNeon{from{box-shadow:0 0 18px rgba(0,217,255,.32),0 0 8px rgba(125,244,255,.28) inset}to{box-shadow:0 0 34px rgba(0,229,255,.62),0 0 18px rgba(125,244,255,.40) inset}}
 @keyframes scanNeon{from{transform:translateX(-40%) rotate(0deg)}to{transform:translateX(40%) rotate(0deg)}}
+
+#ganhadorManual{min-height:170px}
+@media(max-width:560px){#ganhadorManual{min-height:220px}}
+
+
+/* ===== Melhorias: acessibilidade, desempenho e detalhes ===== */
+html{scroll-padding-top:84px}
+.notice{color:var(--white)}
+:focus-visible{outline:2px solid var(--neon);outline-offset:2px}
+body{animation:none}
+body:after{display:none}
+.admin-tab:hover{transform:none}
+.table a{color:var(--red3);text-decoration:underline}
+@media(max-width:768px){body:before{animation:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}html{scroll-behavior:auto}}

@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'kellymenezes.promotorajb@gmail.com',
+          'abnner014@gmail.com'
+        ];
+    }
+    function isCol(c, p) { return c.matches(p + '_(dezenas|grupos)'); }
+    function str(v, max) { return v is string && v.size() > 0 && v.size() <= max; }
+    function d() { return request.resource.data; }
+
+    match /{c}/{id} {
+      // Público lê: configuração, sorteios, ganhadores e escolhas (sem dados pessoais)
+      allow read: if c == 'config' || isCol(c, 'sorteios') || isCol(c, 'ganhadores') || isCol(c, 'reservas') || isAdmin();
+      // Necessário para a transação conferir se o WhatsApp já participou (só leitura de 1 documento)
+      allow get: if isCol(c, 'whats');
+
+      allow write: if isAdmin();
+
+      // Cliente só pode CRIAR sua participação (nunca editar ou apagar)
+      allow create: if
+        (isCol(c, 'participantes') && d().keys().hasOnly(['tipo','sorteioId','sorteioTitulo','nome','whats','whatsLimpo','numeros','numero','limiteNumeros','data','criadoEm'])
+          && str(d().nome, 100) && str(d().whats, 20) && d().numeros is list && d().numeros.size() <= 2)
+        ||
+        (isCol(c, 'reservas') && d().keys().hasOnly(['tipo','sorteioId','numero','participanteId','criadoEm'])
+          && id == d().sorteioId + '_' + d().numero)
+        ||
+        (isCol(c, 'whats') && d().keys().hasOnly(['tipo','sorteioId','whatsLimpo','participanteId','criadoEm'])
+          && id == d().sorteioId + '_' + d().whatsLimpo);
+    }
+  }
+}

@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <link rel="icon" href="https://ugc.production.linktr.ee/21c8eac6-37f8-4d6e-b584-75554d3a60ef_image.png">
-  <title>Sorteio de Grupos - Kelly Menezes JB</title>
+  <meta name="theme-color" content="#020713">
+  <meta name="description" content="Escolha sua dezena ou grupo, participe dos sorteios de Kelly Menezes JB e acompanhe os ganhadores.">
+  <link rel="icon" href="https://i.imgur.com/5RUTmYL.jpeg">
+  <title>Sorteio de Grupos</title>
   <link rel="stylesheet" href="../assets/style.css">
 </head>
 <body>
@@ -30,7 +32,7 @@
       </div>
       <span class="badge">🏆 Grupos online</span>
       <h1>Grupos da Sorte</h1>
-      <p class="lead">Escolha seu sorteio, cadastre seu nome e WhatsApp, selecione uma grupo disponível e acompanhe os ganhadores.</p>
+      <p class="lead">Escolha seu sorteio, cadastre seu nome e WhatsApp, selecione um grupo disponível e acompanhe os ganhadores.</p>
       <div class="hero-actions">
         <button type="button" class="btn ok" id="btnParticiparAgora">🎟️ Participar Agora</button>
         <button type="button" class="btn ghost" id="btnVerGanhadores">👑 Ver Ganhadores</button>
@@ -72,27 +74,27 @@
 </main>
 
 <footer>
-  <strong id="footerName">Kelly Menezes</strong> © <span id="year"></span> — Sistema de Sorteios
+  <strong id="footerName"></strong> © <span id="year"></span> — Sistema de Sorteios
 </footer>
 
-<div id="participarModal" class="modal hidden">
+<div id="participarModal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-box">
-    <div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button type="button" class="close" data-close-modal="participarModal">×</button></div>
+    <div class="modal-head"><h2>🎟️ Participar do Sorteio</h2><button type="button" class="close" aria-label="Fechar" data-close-modal="participarModal">×</button></div>
     <div id="participarInfo"></div>
     <div class="form">
-      <input id="pNome" placeholder="Seu nome completo">
-      <input id="pWhats" inputmode="numeric" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999">
+      <input id="pNome" autocomplete="name" placeholder="Seu nome completo">
+      <input id="pWhats" inputmode="numeric" autocomplete="tel-national" maxlength="15" placeholder="WhatsApp com DDD. Ex: 14999999999">
       <button type="button" class="btn ok" id="btnConfirmarParticipacao">✅ Confirmar Participação</button>
     </div>
   </div>
 </div>
 
-<div id="loginModal" class="modal hidden">
+<div id="loginModal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-box">
-    <div class="modal-head"><h2>🔐 Login Admin</h2><button type="button" class="close" data-close-modal="loginModal">×</button></div>
-    <div class="notice">Entre com o e-mail e senha criados no Firebase Authentication.</div>
+    <div class="modal-head"><h2>🔐 Login Admin</h2><button type="button" class="close" aria-label="Fechar" data-close-modal="loginModal">×</button></div>
+    <div class="notice">Entre com o e-mail e senha.</div>
     <div class="form">
-      <input id="adminEmail" type="email" inputmode="email" autocomplete="username" placeholder="E-mail do administrador" value=" . ">
+      <input id="adminEmail" type="email" inputmode="email" autocomplete="username" placeholder="E-mail do administrador" value="">
       <input id="adminSenha" type="password" autocomplete="current-password" placeholder="Senha do administrador">
       <button type="button" class="btn" id="btnEntrarAdmin">🚀 Entrar no Painel</button>
     </div>

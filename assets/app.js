@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import {
   getFirestore, collection, doc, addDoc, setDoc, updateDoc, deleteDoc, getDoc,
-  onSnapshot, query, where, getDocs, serverTimestamp, runTransaction
+  onSnapshot, query, where, getDocs, serverTimestamp, runTransaction, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -9,7 +9,7 @@ import {
 
 const cfg = window.SORTEIO_CONFIG || {tipo:'dezenas',label:'Dezenas',itemName:'dezena',total:100,digits:2};
 
-// Firebase novo da Kelly - projeto: sorteio-f5431
+// Firebase novo da Kelly - projeto: sorteio-kelly-30eab
 // Este mesmo projeto salva dezenas e centenas em coleções separadas.
 const firebaseConfig = {
   apiKey: "AIzaSyBE1dNYT37n9rBOE2GDKuUidjqxLu1mRls",
@@ -26,14 +26,18 @@ const auth = getAuth(app);
 
 // E-mail autorizado para acessar o painel admin.
 // Crie este usuário no Firebase Authentication > Users.
-const ADMIN_EMAIL = 'kellymenezes.promotorajb@gmail.com';
+const ADMIN_EMAILS = [
+  'kellymenezes.promotorajb@gmail.com',
+  'abnner014@gmail.com'
+];
 
 let currentSorteioId = null;
 let selectedNumeros = [];
 let sorteios = [];
 let participantes = [];
+let reservas = [];
 let ganhadores = [];
-let settings = {nome:'Kelly Menezes JB',rodape:'Kelly Menezes JB',cadastroUrl:''};
+let settings = {nome:'Kelly Menezes JB',rodape:'',cadastroUrl:''};
 let adminLogado = false;
 let authReady = false;
 let renderPendente = false;
@@ -67,6 +71,15 @@ function escapeHtml(v){
   return String(v ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 }
 function escapeAttr(v){ return escapeHtml(v).replace(/"/g,'&quot;'); }
+function hoje(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function mascararWhats(w){
+  const n = normalizarWhats(w);
+  if(n.length < 10 || String(w).includes('*')) return String(w || '-');
+  return `(${n.slice(0,2)}) ${n.slice(2,3)}****-${n.slice(-4)}`;
+}
 function capitalize(s){ return String(s||'').charAt(0).toUpperCase()+String(s||'').slice(1); }
 function normalizarWhats(w){ return String(w||'').replace(/[^0-9]/g,''); }
 function formatDate(d){
@@ -93,9 +106,7 @@ function todosNumeros(){
   return Array.from({length:total},(_,i)=>String(i + start).padStart(cfg.digits,'0'));
 }
 function numerosOcupados(sorteioId){
-  return participantes
-    .filter(p => p.sorteioId === sorteioId)
-    .flatMap(p => numerosDoParticipante(p));
+  return reservas.filter(r => r.sorteioId === sorteioId).map(r => r.numero);
 }
 
 function hideAllPages(){
@@ -136,10 +147,17 @@ function openLogin(){
   const modal = $('loginModal');
   const email = $('adminEmail');
   const senha = $('adminSenha');
-  if(email && !email.value) email.value = ADMIN_EMAIL;
-  if(senha) senha.value = '';
-  if(modal) modal.classList.remove('hidden');
-  setTimeout(()=>senha?.focus(), 80);
+
+  if(email && !email.value)
+    email.value = '';
+
+  if(senha)
+    senha.value = '';
+
+  if(modal)
+    modal.classList.remove('hidden');
+
+  setTimeout(() => senha?.focus(), 80);
 }
 
 function closeModal(id){
@@ -150,7 +168,7 @@ async function loginAdmin(){
   const email = ($('adminEmail')?.value || '').trim().toLowerCase();
   const senha = $('adminSenha')?.value || '';
   if(!email || !senha) return alert('Preencha e-mail e senha do administrador.');
-  if(email !== ADMIN_EMAIL.toLowerCase()) return alert('Este e-mail não está autorizado como admin.');
+  if(!ADMIN_EMAILS.includes(email)) return alert('Este e-mail não está autorizado como admin.');
 
   const btn = $('btnEntrarAdmin');
   if(btn){ btn.disabled = true; btn.textContent = 'Entrando...'; }
@@ -201,7 +219,7 @@ function renderAll(){
   if($('year')) $('year').textContent = new Date().getFullYear();
 
   if($('countSorteios')) $('countSorteios').textContent = sorteios.length;
-  if($('countParticipantes')) $('countParticipantes').textContent = participantes.length;
+  if($('countParticipantes')) $('countParticipantes').textContent = new Set(reservas.map(r => r.participanteId)).size;
   if($('countGanhadores')) $('countGanhadores').textContent = ganhadores.length;
 
   const visiveis = sorteios.filter(s => s.status === 'ativo' || s.status === 'pausado');
@@ -212,6 +230,7 @@ function renderAll(){
       const livres = cfg.total - ocupadas;
       const limite = limiteSorteio(s);
       const pausado = s.status === 'pausado';
+      const esgotado = livres <= 0;
       return `<div class="sorteio ${pausado?'paused-card':''}">
         <div>
           <span class="tag ${pausado?'paused-tag':''}">${pausado?'PAUSADO':'ATIVO'}</span>
@@ -226,7 +245,7 @@ function renderAll(){
           </div>
           ${pausado?'<div class="notice">Sorteio pausado: aparece para todos, mas não aceita novas escolhas.</div>':''}
         </div>
-        <button type="button" class="btn ${pausado?'secondary':'ok'}" ${pausado?'disabled':''} data-participar="${s.id}">${pausado?'⏸️ Pausado':'🎯 Quero Participar'}</button>
+        <button type="button" class="btn ${pausado||esgotado?'secondary':'ok'}" ${pausado||esgotado?'disabled':''} data-participar="${s.id}">${pausado?'⏸️ Pausado':esgotado?'🚫 Esgotado':'🎯 Quero Participar'}</button>
       </div>`;
     }).join('') || `<div class="sorteio">Nenhum sorteio de ${cfg.label.toLowerCase()} disponível no momento.</div>`;
   }
@@ -239,7 +258,7 @@ function renderAll(){
       <p>Sorteio: ${escapeHtml(g.sorteioTitulo)}</p>
       <div class="price">${escapeHtml(g.premio)}</div>
       <p>${capitalize(cfg.itemName)}: <strong>${escapeHtml(g.numero || textoNumeros(g) || '-')}</strong></p>
-      <p>WhatsApp: ${escapeHtml(g.whats)}</p>
+      <p>WhatsApp: ${escapeHtml(mascararWhats(g.whats))}</p>
       <p>Data: ${formatDate(g.data)}</p>
     </div>`).join('') || '<div class="sorteio">Nenhum ganhador divulgado ainda.</div>';
   }
@@ -248,7 +267,6 @@ function renderAll(){
 }
 
 function openParticipar(id){
-  inscreverParticipantes();
   currentSorteioId = id;
   selectedNumeros = [];
   const s = sorteios.find(x => x.id === id);
@@ -340,7 +358,7 @@ async function salvarParticipacao(){
         numeros: numerosEscolhidos,
         numero: numerosEscolhidos.join(', '),
         limiteNumeros: limite,
-        data: new Date().toISOString().slice(0,10),
+        data: hoje(),
         criadoEm: serverTimestamp()
       };
 
@@ -359,7 +377,6 @@ async function salvarParticipacao(){
           sorteioId: s.id,
           numero: numerosEscolhidos[i],
           participanteId: participanteRef.id,
-          whatsLimpo,
           criadoEm: serverTimestamp()
         });
       });
@@ -418,6 +435,7 @@ function renderAdmin(){
         ${todosNumeros().map(n => `<option value="${n}">${n}</option>`).join('')}
       </select>
       <div id="resultadoFiltroParticipante" class="notice">Selecione uma ${cfg.itemName} para ver quem escolheu.</div>
+      <button type="button" class="btn secondary" id="btnExportarCsv">⬇️ Exportar participantes (CSV)</button>
       <button type="button" class="btn danger" id="btnLimparParticipantes">🗑️ Excluir histórico de participantes</button>
     </div><br>${tableParticipantes()}`;
 
@@ -431,12 +449,12 @@ function renderAdmin(){
         ${todosNumeros().map(n => `<option value="${n}">${n}</option>`).join('')}
       </select>
       <div id="resultadoFiltroGanhador" class="notice">Escolha uma ${cfg.itemName} para listar os participantes.</div>
-      <label>Confirmar ganhador manualmente</label>
-      <select id="ganhadorManual">
-        <option value="">Selecione o ganhador</option>
+      <label>Confirmar ganhadores manualmente</label>
+      <select id="ganhadorManual" multiple size="7">
         ${participantes.map(p => `<option value="${p.id}">${escapeHtml(textoNumeros(p))} - ${escapeHtml(p.nome)} | ${escapeHtml(p.sorteioTitulo)}</option>`).join('')}
       </select>
-      <button type="button" class="btn ok" id="btnConfirmarGanhador">🏆 Confirmar Ganhador</button>
+      <div class="notice">Você pode selecionar mais de um participante. No computador, segure Ctrl para escolher vários. No celular, toque e segure ou use a seleção múltipla do navegador.</div>
+      <button type="button" class="btn ok" id="btnConfirmarGanhador">🏆 Confirmar Ganhadores</button>
       <button type="button" class="btn danger" id="btnLimparGanhadores">🗑️ Excluir histórico de ganhadores</button>
     </div><br>${tableGanhadores()}`;
 
@@ -472,7 +490,7 @@ function tableSorteios(){
 function tableParticipantes(){
   return `<div class="table-wrap"><table class="table">
     <tr><th>${capitalize(cfg.itemName)}(s)</th><th>Nome</th><th>WhatsApp</th><th>Sorteio</th></tr>
-    ${participantes.map(p => `<tr><td><strong>${escapeHtml(textoNumeros(p) || '-')}</strong></td><td>${escapeHtml(p.nome)}</td><td>${escapeHtml(p.whats)}</td><td>${escapeHtml(p.sorteioTitulo)}</td></tr>`).join('')}
+    ${participantes.map(p => `<tr><td><strong>${escapeHtml(textoNumeros(p) || '-')}</strong></td><td>${escapeHtml(p.nome)}</td><td><a href="https://wa.me/55${normalizarWhats(p.whats)}" target="_blank" rel="noopener">${escapeHtml(p.whats)}</a></td><td>${escapeHtml(p.sorteioTitulo)}</td></tr>`).join('')}
   </table></div>`;
 }
 
@@ -490,7 +508,7 @@ async function criarSorteio(){
   const titulo = $('sTitulo')?.value.trim() || '';
   const descricao = $('sDesc')?.value.trim() || '';
   const premio = $('sPremio')?.value.trim() || '';
-  const data = $('sData')?.value || new Date().toISOString().slice(0,10);
+  const data = $('sData')?.value || hoje();
   const limiteNumeros = Number($('sLimiteNumeros')?.value || 1);
 
   if(!titulo){
@@ -545,17 +563,39 @@ async function toggleSorteio(id){
   }
 }
 
+async function apagarDocs(refs){
+  for(let i = 0; i < refs.length; i += 450){
+    const lote = writeBatch(firestore);
+    refs.slice(i, i + 450).forEach(r => lote.delete(r));
+    await lote.commit();
+  }
+}
+
+async function refsDaColecao(nome, sorteioId){
+  const base = collection(firestore, `${nome}_${cfg.tipo}`);
+  const snap = await getDocs(sorteioId ? query(base, where('sorteioId','==',sorteioId)) : base);
+  return snap.docs.map(d => d.ref);
+}
+
 async function excluirSorteio(id){
   if(!confirm('Excluir este sorteio? Isso também apaga participantes e ganhadores dele.')) return;
-  await deleteDoc(doc(firestore, `sorteios_${cfg.tipo}`, id));
-  const partSnap = await getDocs(query(col('participantes'), where('sorteioId','==',id)));
-  for(const item of partSnap.docs) await deleteDoc(doc(firestore, `participantes_${cfg.tipo}`, item.id));
-  const ganhSnap = await getDocs(query(col('ganhadores'), where('sorteioId','==',id)));
-  for(const item of ganhSnap.docs) await deleteDoc(doc(firestore, `ganhadores_${cfg.tipo}`, item.id));
-  const resSnap = await getDocs(query(collection(firestore, `reservas_${cfg.tipo}`), where('sorteioId','==',id)));
-  for(const item of resSnap.docs) await deleteDoc(doc(firestore, `reservas_${cfg.tipo}`, item.id));
-  const whatsSnap = await getDocs(query(collection(firestore, `whats_${cfg.tipo}`), where('sorteioId','==',id)));
-  for(const item of whatsSnap.docs) await deleteDoc(doc(firestore, `whats_${cfg.tipo}`, item.id));
+  try{
+    const refs = [doc(firestore, `sorteios_${cfg.tipo}`, id)];
+    for(const nome of ['participantes','ganhadores','reservas','whats']) refs.push(...await refsDaColecao(nome, id));
+    await apagarDocs(refs);
+  }catch(err){ mostrarErroFirebase(err, 'excluir sorteio'); }
+}
+
+function exportarCsv(){
+  const seguro = c => { const v = String(c ?? ''); return `"${(/^[=+\-@]/.test(v) ? "'" + v : v).replace(/"/g,'""')}"`; };
+  const linhas = [['Sorteio', capitalize(cfg.itemName), 'Nome', 'WhatsApp', 'Data']];
+  participantes.forEach(p => linhas.push([p.sorteioTitulo, textoNumeros(p), p.nome, p.whats, formatDate(p.data)]));
+  const csv = '\ufeff' + linhas.map(l => l.map(seguro).join(';')).join('\r\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'}));
+  a.download = `participantes-${cfg.tipo}-${hoje()}.csv`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
 
@@ -578,44 +618,82 @@ function renderFiltroNumero(targetId, numero){
 
 async function limparGanhadores(){
   if(!confirm(`Excluir todo o histórico de ganhadores de ${cfg.label}?`)) return;
-  for(const g of ganhadores) await deleteDoc(doc(firestore, `ganhadores_${cfg.tipo}`, g.id));
-  alert('Histórico de ganhadores excluído.');
+  try{
+    const refs = [];
+    for(const nome of ['ganhadores']) refs.push(...await refsDaColecao(nome));
+    await apagarDocs(refs);
+    alert('Histórico de ganhadores excluído.');
+  }catch(err){ mostrarErroFirebase(err, 'limpar dados'); }
 }
 
 async function limparParticipantes(){
   if(!confirm(`Excluir todos os participantes de ${cfg.label}? Isso também libera as escolhas.`)) return;
-  for(const p of participantes) await deleteDoc(doc(firestore, `participantes_${cfg.tipo}`, p.id));
-  const resSnap = await getDocs(collection(firestore, `reservas_${cfg.tipo}`));
-  for(const item of resSnap.docs) await deleteDoc(doc(firestore, `reservas_${cfg.tipo}`, item.id));
-  const whatsSnap = await getDocs(collection(firestore, `whats_${cfg.tipo}`));
-  for(const item of whatsSnap.docs) await deleteDoc(doc(firestore, `whats_${cfg.tipo}`, item.id));
-  alert('Histórico de participantes excluído e escolhas liberadas.');
+  try{
+    const refs = [];
+    for(const nome of ['participantes', 'reservas', 'whats']) refs.push(...await refsDaColecao(nome));
+    await apagarDocs(refs);
+    alert('Histórico de participantes excluído e escolhas liberadas.');
+  }catch(err){ mostrarErroFirebase(err, 'limpar dados'); }
 }
 
 async function sortearGanhador(){
-  const participanteId = $('ganhadorManual')?.value || '';
-  if(!participanteId) return alert('Selecione um participante.');
-  const p = participantes.find(x => x.id === participanteId);
-  if(!p) return alert('Participante não encontrado.');
-  const s = sorteios.find(x => x.id === p.sorteioId);
-  const nums = numerosDoParticipante(p);
-  const ja = ganhadores.some(g => g.participanteId === p.id);
-  if(ja) return alert('Esse participante já está marcado como ganhador.');
+  const select = $('ganhadorManual');
+  const ids = select
+    ? Array.from(select.selectedOptions).map(opt => opt.value).filter(Boolean)
+    : [];
 
-  await addDoc(col('ganhadores'), {
-    tipo: cfg.tipo,
-    participanteId: p.id,
-    nome: p.nome,
-    whats: p.whats,
-    numeros: nums,
-    numero: nums.join(', '),
-    sorteioId: p.sorteioId,
-    sorteioTitulo: p.sorteioTitulo,
-    premio: s?.premio || '',
-    data: new Date().toISOString().slice(0,10),
-    criadoEm: serverTimestamp()
-  });
-  alert('Ganhador confirmado: ' + p.nome);
+  if(!ids.length) return alert('Selecione pelo menos um participante.');
+
+  let salvos = 0;
+  let repetidos = 0;
+  let erros = 0;
+
+  for(const participanteId of ids){
+    const p = participantes.find(x => x.id === participanteId);
+    if(!p){
+      erros++;
+      continue;
+    }
+
+    const s = sorteios.find(x => x.id === p.sorteioId);
+    const nums = numerosDoParticipante(p);
+
+    // Permite vários ganhadores no mesmo sorteio.
+    // Só bloqueia repetir o mesmo participante no mesmo sorteio.
+    const ja = ganhadores.some(g =>
+      g.participanteId === p.id && g.sorteioId === p.sorteioId
+    );
+
+    if(ja){
+      repetidos++;
+      continue;
+    }
+
+    try{
+      await addDoc(col('ganhadores'), {
+        tipo: cfg.tipo,
+        participanteId: p.id,
+        nome: p.nome,
+        whats: mascararWhats(p.whats),
+        numeros: nums,
+        numero: nums.join(', '),
+        sorteioId: p.sorteioId,
+        sorteioTitulo: p.sorteioTitulo,
+        premio: s?.premio || '',
+        data: hoje(),
+        criadoEm: serverTimestamp()
+      });
+      salvos++;
+    }catch(err){
+      console.error('Erro ao confirmar ganhador:', err);
+      erros++;
+    }
+  }
+
+  let msg = `${salvos} ganhador(es) confirmado(s).`;
+  if(repetidos) msg += ` ${repetidos} já estavam marcados e foram ignorados.`;
+  if(erros) msg += ` ${erros} não puderam ser salvos.`;
+  alert(msg);
 }
 
 async function salvarAparencia(){
@@ -629,13 +707,12 @@ async function salvarAparencia(){
 
 async function limparTudo(){
   if(!confirm(`Tem certeza? Isso apaga sorteios, participantes e ganhadores de ${cfg.label}.`)) return;
-  for(const s of sorteios) await deleteDoc(doc(firestore, `sorteios_${cfg.tipo}`, s.id));
-  for(const p of participantes) await deleteDoc(doc(firestore, `participantes_${cfg.tipo}`, p.id));
-  for(const g of ganhadores) await deleteDoc(doc(firestore, `ganhadores_${cfg.tipo}`, g.id));
-  const resSnap = await getDocs(collection(firestore, `reservas_${cfg.tipo}`));
-  for(const item of resSnap.docs) await deleteDoc(doc(firestore, `reservas_${cfg.tipo}`, item.id));
-  const whatsSnap = await getDocs(collection(firestore, `whats_${cfg.tipo}`));
-  for(const item of whatsSnap.docs) await deleteDoc(doc(firestore, `whats_${cfg.tipo}`, item.id));
+  try{
+    const refs = [];
+    for(const nome of ['sorteios', 'participantes', 'ganhadores', 'reservas', 'whats']) refs.push(...await refsDaColecao(nome));
+    await apagarDocs(refs);
+    alert('Todos os dados foram apagados.');
+  }catch(err){ mostrarErroFirebase(err, 'limpar dados'); }
 }
 
 function bindEvents(){
@@ -661,6 +738,9 @@ function bindEvents(){
   on('btnSairAdmin', 'click', () => logoutAdmin());
 
   document.addEventListener('click', async (e) => {
+    if(e.target.classList?.contains('modal')){ e.target.classList.add('hidden'); return; }
+    if(e.target.closest('#btnExportarCsv')){ e.preventDefault(); exportarCsv(); return; }
+
     const close = e.target.closest('[data-close-modal]');
     if(close){
       e.preventDefault();
@@ -771,6 +851,11 @@ function bindEvents(){
     if(e.target?.id === 'filtroNumeroParticipante') renderFiltroNumero('resultadoFiltroParticipante', e.target.value);
   }, {signal});
 
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+  }, {signal});
+  on('pWhats', 'input', e => { e.target.value = e.target.value.replace(/\D/g,'').slice(0,11); });
+
   document.getElementById('adminSenha')?.addEventListener('keydown', e => {
     if(e.key === 'Enter') loginAdmin();
   }, {signal});
@@ -796,12 +881,17 @@ function mostrarErroFirebase(erro, acao='operação'){
 function iniciarAuth(){
   onAuthStateChanged(auth, user => {
     authReady = true;
-    adminLogado = !!(user && user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase());
+    adminLogado = !!(
+  user &&
+  user.email &&
+  ADMIN_EMAILS.includes(user.email.toLowerCase())
+);
     if(user && !adminLogado){
       signOut(auth);
       alert('Este login não tem permissão de administrador.');
     }
     if(adminLogado){
+      inscreverParticipantes();
       closeModal('loginModal');
       if(location.hash === '#admin') showPage('admin');
     }else if(!adminLogado && !($('adminPage')?.classList.contains('hidden'))){
@@ -817,12 +907,19 @@ let unsubscribeGanhadores = null;
 let unsubscribeConfig = null;
 
 function inscreverParticipantes(){
-  if(participantesInscritos) return;
+  if(participantesInscritos || !adminLogado) return;
   participantesInscritos = true;
   unsubscribeParticipantes = onSnapshot(col('participantes'), snap => {
     participantes = snap.docs.map(d => ({id:d.id, ...d.data()}));
     agendarRender();
   }, erro => mostrarErroFirebase(erro, 'ler participantes'));
+}
+
+function inscreverReservas(){
+  onSnapshot(collection(firestore, `reservas_${cfg.tipo}`), snap => {
+    reservas = snap.docs.map(d => d.data());
+    agendarRender();
+  }, erro => mostrarErroFirebase(erro, 'ler escolhas'));
 }
 
 function inscreverGanhadores(){
@@ -849,7 +946,7 @@ function iniciarFirebase(){
   }, erro => mostrarErroFirebase(erro, 'ler sorteios'));
 
   // Participantes e ganhadores entram depois, para não travar a primeira tela no iPhone/Safari.
-  quandoLivre(() => inscreverParticipantes(), 600);
+  inscreverReservas();
   quandoLivre(() => inscreverGanhadores(), 1000);
 }
 
@@ -859,11 +956,6 @@ if(window.matchMedia && window.matchMedia('(pointer: fine)').matches){
     document.body.style.setProperty('--my', `${(e.clientY/window.innerHeight)*100}%`);
   }, {passive:true});
 }
-// deixa disponível também para qualquer onclick antigo que tenha sobrado
-Object.assign(window, {
-  showPage, openLogin, loginAdmin, closeModal, adminTab, abrirCadastro,
-  openParticipar, selecionarNumero, salvarParticipacao
-});
 
 
 Object.assign(window, {
